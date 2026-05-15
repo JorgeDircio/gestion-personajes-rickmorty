@@ -1,4 +1,7 @@
 packages:
   - "apps/*"
   - "packages/*"
-  - "amTesting"
+
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver
