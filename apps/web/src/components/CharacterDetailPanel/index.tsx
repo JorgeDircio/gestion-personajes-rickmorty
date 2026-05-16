@@ -35,7 +35,7 @@ export default function CharacterDetailPanel({ character }: Props) {
           src={character.image}
           alt={character.name}
           fill
-          sizes="(min-width: 1440px) 512px, 50vw"
+          sizes="(min-width: 1025px) 50vw, 94vw"
           quality={90}
           className={styles.image}
           priority

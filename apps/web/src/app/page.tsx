@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Character, CharactersResponse, Favorite } from "@/types";
 import { fetchCharacters } from "@/services/rickmortyApi";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import {
   addFavoriteRequest,
   fetchFavoritesRequest,
@@ -15,12 +16,17 @@ import CharacterGridCard from "@/components/CharacterGridCard";
 import SearchBar from "@/components/SearchBar";
 import ScrollControls from "@/components/ScrollControls";
 import FavsTab from "@/components/FavsTab";
+import SceneFooter from "@/components/SceneFooter";
 import styles from "./page.module.css";
 
-const GRID_SIZE = 4;
+const DESKTOP_GRID = 4;
+const MOBILE_GRID = 2;
+const MAX_FAVS = 4;
 
 export default function HomePage() {
   const dispatch = useAppDispatch();
+  const isMobile = useIsMobile();
+  const gridSize = isMobile ? MOBILE_GRID : DESKTOP_GRID;
   const { items: favorites, loading: favoritesLoading } = useAppSelector(
     (s) => s.favorites
   );
@@ -63,17 +69,23 @@ export default function HomePage() {
   }, [loadCharacters]);
 
   const results = data?.results ?? [];
-  const visibleCharacters = results.slice(gridOffset, gridOffset + GRID_SIZE);
+  const visibleCharacters = results.slice(gridOffset, gridOffset + gridSize);
 
   const selectedCharacter = useMemo(
     () => results.find((c) => c.id === selectedId) ?? visibleCharacters[0] ?? null,
     [results, selectedId, visibleCharacters]
   );
 
+  const selectedIndex = results.findIndex((c) => c.id === selectedId);
+
   const canScrollUp = gridOffset > 0;
   const canScrollDown =
-    gridOffset + GRID_SIZE < results.length ||
-    Boolean(data?.info.next && gridOffset + GRID_SIZE >= results.length);
+    gridOffset + gridSize < results.length ||
+    Boolean(data?.info.next && gridOffset + gridSize >= results.length);
+
+  const canCarouselPrev = selectedIndex > 0;
+  const canCarouselNext =
+    selectedIndex >= 0 && selectedIndex < results.length - 1;
 
   function handleSearch(name: string) {
     setPage(1);
@@ -81,12 +93,38 @@ export default function HomePage() {
   }
 
   function handleScrollUp() {
-    setGridOffset((prev) => Math.max(0, prev - GRID_SIZE));
+    setGridOffset((prev) => Math.max(0, prev - gridSize));
   }
 
   async function handleScrollDown() {
-    if (gridOffset + GRID_SIZE < results.length) {
-      setGridOffset((prev) => prev + GRID_SIZE);
+    if (gridOffset + gridSize < results.length) {
+      setGridOffset((prev) => prev + gridSize);
+      return;
+    }
+    if (data?.info.next) {
+      setPage((p) => p + 1);
+    }
+  }
+
+  function syncMobileGridToIndex(index: number) {
+    if (!isMobile || index < 0) return;
+    const nextOffset = Math.floor(index / MOBILE_GRID) * MOBILE_GRID;
+    setGridOffset(nextOffset);
+  }
+
+  function handleCarouselPrev() {
+    if (selectedIndex > 0) {
+      const nextIndex = selectedIndex - 1;
+      syncMobileGridToIndex(nextIndex);
+      setSelectedId(results[nextIndex].id);
+    }
+  }
+
+  async function handleCarouselNext() {
+    if (selectedIndex < results.length - 1) {
+      const nextIndex = selectedIndex + 1;
+      syncMobileGridToIndex(nextIndex);
+      setSelectedId(results[nextIndex].id);
       return;
     }
     if (data?.info.next) {
@@ -95,15 +133,27 @@ export default function HomePage() {
   }
 
   useEffect(() => {
+    if (selectedId === null || results.length === 0) return;
+
+    const inVisible = visibleCharacters.some((c) => c.id === selectedId);
+    if (inVisible) return;
+
+    if (isMobile) {
+      const idx = results.findIndex((c) => c.id === selectedId);
+      if (idx !== -1) {
+        const nextOffset = Math.floor(idx / MOBILE_GRID) * MOBILE_GRID;
+        if (nextOffset !== gridOffset) {
+          setGridOffset(nextOffset);
+        }
+        return;
+      }
+    }
+
     const firstVisible = visibleCharacters[0];
-    if (
-      firstVisible &&
-      selectedId !== null &&
-      !visibleCharacters.some((c) => c.id === selectedId)
-    ) {
+    if (firstVisible) {
       setSelectedId(firstVisible.id);
     }
-  }, [gridOffset, visibleCharacters, selectedId]);
+  }, [gridOffset, visibleCharacters, selectedId, isMobile, results]);
 
   function isFavorite(characterId: number) {
     return favorites.some((f) => f.characterId === characterId);
@@ -113,7 +163,7 @@ export default function HomePage() {
     const fav = favorites.find((f) => f.characterId === character.id);
     if (fav) {
       dispatch(removeFavoriteRequest(fav.id));
-    } else {
+    } else if (favorites.length < MAX_FAVS) {
       dispatch(
         addFavoriteRequest({
           characterId: character.id,
@@ -155,6 +205,10 @@ export default function HomePage() {
     setGridOffset(0);
   }
 
+  function handleRemoveFavorite(favoriteId: number) {
+    dispatch(removeFavoriteRequest(favoriteId));
+  }
+
   return (
     <div className={styles.scene}>
       <div className={styles.bgViewport} aria-hidden>
@@ -177,14 +231,30 @@ export default function HomePage() {
             fill
             unoptimized
             priority
-            className={styles.bgCharactersImg}
+            className={`${styles.bgCharactersImg} ${styles.bgCharactersImgDesktop}`}
+            sizes="100vw"
+            suppressHydrationWarning
+          />
+          <Image
+            src="/images/rick-morty-minimal-night.svg"
+            alt=""
+            fill
+            unoptimized
+            priority
+            className={`${styles.bgCharactersImg} ${styles.bgCharactersImgMobile}`}
             sizes="100vw"
             suppressHydrationWarning
           />
         </div>
       </div>
 
-      <div className={styles.footer} aria-hidden />
+      <SceneFooter>
+        <FavsTab
+          favorites={favorites}
+          onSelectFavorite={handleSelectFavorite}
+          onRemoveFavorite={handleRemoveFavorite}
+        />
+      </SceneFooter>
 
       <div className={styles.figmaCanvas}>
         <div className={styles.logo}>
@@ -199,7 +269,53 @@ export default function HomePage() {
         </div>
 
         <div className={styles.panel}>
-          <CharacterDetailPanel character={selectedCharacter} />
+          <div className={styles.detailRegion}>
+            <CharacterDetailPanel character={selectedCharacter} />
+            <div className={styles.carouselNav} aria-label="Navegación de personajes">
+              <button
+                type="button"
+                className={`${styles.carouselBtn} ${styles.carouselBtnPrev}`}
+                onClick={handleCarouselPrev}
+                disabled={!canCarouselPrev}
+                aria-label="Personaje anterior"
+              >
+                <svg
+                  className={styles.carouselIcon}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
+                  suppressHydrationWarning
+                >
+                  <path d="M15 6l-6 6 6 6" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className={`${styles.carouselBtn} ${styles.carouselBtnNext}`}
+                onClick={handleCarouselNext}
+                disabled={!canCarouselNext && !data?.info.next}
+                aria-label="Personaje siguiente"
+              >
+                <svg
+                  className={styles.carouselIcon}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
+                  suppressHydrationWarning
+                >
+                  <path d="M9 6l6 6-6 6" />
+                </svg>
+              </button>
+            </div>
+          </div>
 
           <div className={styles.right}>
             <div className={styles.searchWrap}>
@@ -238,13 +354,6 @@ export default function HomePage() {
                   />
               </div>
             )}
-
-            <div className={styles.favsSlot}>
-              <FavsTab
-                favorites={favorites}
-                onSelectFavorite={handleSelectFavorite}
-              />
-            </div>
           </div>
         </div>
       </div>

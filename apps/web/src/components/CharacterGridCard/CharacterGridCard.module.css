@@ -102,22 +102,58 @@
   color: var(--color-on-accent);
 }
 
-.heartIcon {
+.heartSvg {
   display: block;
   width: calc(18 / 190 * 100cqw);
   height: calc(18 / 190 * 100cqw);
   flex-shrink: 0;
-  background-color: var(--color-on-accent);
-  mask: url("/images/heart-red.svg") center / contain no-repeat;
-  -webkit-mask: url("/images/heart-red.svg") center / contain no-repeat;
-  transition: background-color 0.2s;
+  color: var(--color-on-accent);
+  transition: color 0.2s;
 }
 
-.likeActive .heartIcon {
-  background-color: var(--color-heart-active);
+.likeActive .heartSvg {
+  color: var(--color-heart-active);
 }
 
 .like:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+@media (max-width: 1024px) {
+  .cardShell {
+    aspect-ratio: 140 / 170;
+    height: 100%;
+  }
+
+  .card {
+    border-radius: calc(30 / 170 * 100cqh);
+    border-width: calc(2 / 140 * 100cqw);
+  }
+
+  .name {
+    height: calc(35 / 170 * 100cqh);
+    font-size: calc(12 / 170 * 100cqh);
+  }
+
+  .imageWrap {
+    left: calc(18 / 140 * 100cqw);
+    top: calc(35 / 170 * 100cqh);
+    width: calc(104 / 140 * 100cqw);
+    height: calc(104 / 170 * 100cqh);
+  }
+
+  .like {
+    left: calc(18 / 140 * 100cqw);
+    width: calc(104 / 140 * 100cqw);
+    bottom: calc(6 / 170 * 100cqh);
+    height: calc(24 / 170 * 100cqh);
+    font-size: calc(11 / 170 * 100cqh);
+    gap: calc(4 / 140 * 100cqw);
+  }
+
+  .heartSvg {
+    width: calc(16 / 140 * 100cqw);
+    height: calc(16 / 140 * 100cqw);
+  }
 }
