@@ -13,18 +13,20 @@
   background: var(--color-card);
   border-radius: calc(30 / 226 * 100cqh);
   border: calc(2 / 190 * 100cqw) solid transparent;
-  box-shadow:
-    calc(15 / 190 * 100cqw) calc(15 / 226 * 100cqh) calc(30 / 226 * 100cqh) 0
-    var(--color-card-shadow);
+  box-shadow: var(--shadow-card);
   cursor: pointer;
   overflow: hidden;
   transition:
-    transform 0.2s,
+    background 0.2s,
     border-color 0.2s;
 }
 
 .card:hover {
-  transform: translateY(calc(-2 / 226 * 100cqh));
+  background: var(--color-card-hover);
+}
+
+.card:hover .name {
+  background: var(--color-card-hover);
 }
 
 .selected {

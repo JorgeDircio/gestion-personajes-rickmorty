@@ -4,12 +4,10 @@ import { useState, useRef, useEffect } from "react";
 import { Favorite } from "@/types";
 import styles from "./FavsTab.module.css";
 
-const MAX_FAVS = 4;
-
 interface Props {
   favorites: Favorite[];
   onSelectFavorite: (favorite: Favorite) => void;
-  onRemoveFavorite: (favoriteId: number) => void;
+  onRemoveFavorite: (characterId: number) => void;
 }
 
 export default function FavsTab({
@@ -20,8 +18,6 @@ export default function FavsTab({
   const [open, setOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
-  const listed = favorites.slice(0, MAX_FAVS);
-
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1025px)");
     const sync = () => setIsDesktop(mq.matches);
@@ -63,16 +59,21 @@ export default function FavsTab({
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="listbox"
+        aria-label={
+          favorites.length > 0
+            ? `FAVS, ${favorites.length} favoritos`
+            : "FAVS, sin favoritos"
+        }
       >
         FAVS
       </button>
       {open && (
         <ul className={styles.dropdown} role="listbox">
-          {listed.length === 0 ? (
+          {favorites.length === 0 ? (
             <li className={styles.empty}>Sin favoritos</li>
           ) : (
-            listed.map((fav) => (
-              <li key={fav.id} className={styles.row}>
+            favorites.map((fav) => (
+              <li key={fav.characterId} className={styles.row}>
                 <button
                   type="button"
                   className={styles.item}
@@ -90,7 +91,7 @@ export default function FavsTab({
                   aria-label={`Eliminar ${fav.name}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onRemoveFavorite(fav.id);
+                    onRemoveFavorite(fav.characterId);
                   }}
                 >
                   <svg

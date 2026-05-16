@@ -12,4 +12,5 @@
 .favsMount {
   container-type: size;
   container-name: favs-slot;
+  color: var(--color-favs-item-text);
 }

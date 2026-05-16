@@ -16,13 +16,17 @@
   --color-panel-dark: #2e2e2e;
   --color-panel-right: #1c1c1c;
   --color-characters-bg: #1c1c1c;
-  --color-card: #212121;
-  --color-card-header: #212121;
+  --color-card: #212121cc;
+  --color-card-header: #212121cc;
   --color-card-shadow: #191919;
+  --shadow-card: 15px 15px 30px 0 #191919;
   --color-favs-btn: #5b5454;
   --color-favs-btn-text: #ffffff;
+  --color-favs-dropdown-bg: #1a1a1a;
+  --color-favs-row-bg: rgba(255, 255, 255, 0.28);
+  --color-favs-item-text: #ffffff;
   --color-detail-data-bg: #000000b2;
-  --color-card-hover: #252525;
+  --color-card-hover: #4f4f4fcc;
   --color-text: #ffffff;
   --color-text-muted: #a8a8a8;
   --color-alive: #55cc44;
@@ -36,7 +40,6 @@
   --radius-panel: 24px;
   --radius-card: 20px;
   --radius-pill: 999px;
-  --shadow-card-hover: 0 24px 48px rgba(0, 0, 0, 0.75);
   --font-display: var(--font-bebas), "Bebas Neue", Impact, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
   --font-status: var(--font-roboto-condensed), "Roboto Condensed", sans-serif;
@@ -62,7 +65,6 @@ button {
   cursor: pointer;
   font-family: inherit;
   border: none;
-  background: none;
 }
 
 img {

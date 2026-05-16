@@ -491,7 +491,7 @@
   }
 
   .carouselNav .carouselBtn:active:not(:disabled) {
-    background: #7b7b7bb2;
+    background: #3a3a3ae6;
     color: var(--color-lime);
   }
 
