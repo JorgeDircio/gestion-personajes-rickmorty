@@ -39,7 +39,11 @@ const favoritesSlice = createSlice({
       },
     },
     addFavoriteSuccess(state, action: PayloadAction<Favorite>) {
-      state.items.push(action.payload);
+      if (
+        !state.items.some((f) => f.characterId === action.payload.characterId)
+      ) {
+        state.items.push(action.payload);
+      }
       state.loading = false;
     },
     addFavoriteFailure(state, action: PayloadAction<string>) {
@@ -56,7 +60,9 @@ const favoritesSlice = createSlice({
       },
     },
     removeFavoriteSuccess(state, action: PayloadAction<number>) {
-      state.items = state.items.filter((f) => f.id !== action.payload);
+      state.items = state.items.filter(
+        (f) => f.characterId !== action.payload
+      );
       state.loading = false;
     },
     removeFavoriteFailure(state, action: PayloadAction<string>) {
