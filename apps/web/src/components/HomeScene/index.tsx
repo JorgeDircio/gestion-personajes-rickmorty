@@ -15,7 +15,7 @@ export default function HomeScene() {
   const scene = useCharacterScene();
   const favorites = useFavoriteActions({
     results: scene.results,
-    setSelectedId: scene.setSelectedId,
+    setSelectedId: scene.selectCharacter,
     showCharacterPreview: scene.showCharacterPreview,
     reload: scene.reload,
   });
@@ -63,7 +63,7 @@ export default function HomeScene() {
             favoritesLoading={favorites.favoritesLoading}
             isFavorite={favorites.isFavorite}
             onSearch={scene.handleSearch}
-            onSelectCharacter={scene.setSelectedId}
+            onSelectCharacter={scene.selectCharacter}
             onToggleFavorite={favorites.handleToggleFavorite}
             onScrollUp={scene.handleScrollUp}
             onScrollDown={scene.handleScrollDown}

@@ -7,6 +7,7 @@ import { useIsMobile } from "./useIsMobile";
 
 const DESKTOP_GRID = 4;
 const MOBILE_GRID = 2;
+const EMPTY_RESULTS: Character[] = [];
 
 export function useCharacterScene() {
   const isMobile = useIsMobile();
@@ -20,7 +21,17 @@ export function useCharacterScene() {
   const [gridOffset, setGridOffset] = useState(0);
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
-  const load = useCallback(async () => {
+  const results = useMemo(
+    () => data?.results ?? EMPTY_RESULTS,
+    [data]
+  );
+
+  const visibleCharacters = useMemo(
+    () => results.slice(gridOffset, gridOffset + gridSize),
+    [results, gridOffset, gridSize]
+  );
+
+  const fetchScene = useCallback(async (isCancelled: () => boolean = () => false) => {
     setLoading(true);
     setError(null);
     try {
@@ -28,24 +39,33 @@ export function useCharacterScene() {
         page,
         name: nameFilter || undefined,
       });
+      if (isCancelled()) return;
       setData(result);
       setGridOffset(0);
       setSelectedId(result.results[0]?.id ?? null);
     } catch {
+      if (isCancelled()) return;
       setError("No se encontraron personajes.");
       setData(null);
       setSelectedId(null);
     } finally {
-      setLoading(false);
+      if (!isCancelled()) setLoading(false);
     }
   }, [page, nameFilter]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    let cancelled = false;
+    queueMicrotask(() => {
+      void fetchScene(() => cancelled);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchScene]);
 
-  const results = data?.results ?? [];
-  const visibleCharacters = results.slice(gridOffset, gridOffset + gridSize);
+  const reload = useCallback(() => {
+    void fetchScene();
+  }, [fetchScene]);
 
   const selectedCharacter = useMemo(
     () =>
@@ -63,18 +83,44 @@ export function useCharacterScene() {
     selectedIndex >= 0 && selectedIndex < results.length - 1;
   const hasNextPage = Boolean(data?.info.next);
 
+  const selectCharacter = useCallback(
+    (id: number) => {
+      const idx = results.findIndex((c) => c.id === id);
+      if (isMobile && idx !== -1) {
+        setGridOffset(Math.floor(idx / MOBILE_GRID) * MOBILE_GRID);
+      }
+      setSelectedId(id);
+    },
+    [results, isMobile]
+  );
+
+  function keepSelectionInView(offset: number) {
+    const visible = results.slice(offset, offset + gridSize);
+    if (
+      selectedId !== null &&
+      !visible.some((c) => c.id === selectedId) &&
+      visible[0]
+    ) {
+      setSelectedId(visible[0].id);
+    }
+  }
+
   function handleSearch(name: string) {
     setPage(1);
     setNameFilter(name);
   }
 
   function handleScrollUp() {
-    setGridOffset((prev) => Math.max(0, prev - gridSize));
+    const nextOffset = Math.max(0, gridOffset - gridSize);
+    setGridOffset(nextOffset);
+    keepSelectionInView(nextOffset);
   }
 
   function handleScrollDown() {
     if (gridOffset + gridSize < results.length) {
-      setGridOffset((prev) => prev + gridSize);
+      const nextOffset = gridOffset + gridSize;
+      setGridOffset(nextOffset);
+      keepSelectionInView(nextOffset);
       return;
     }
     if (data?.info.next) setPage((p) => p + 1);
@@ -82,38 +128,16 @@ export function useCharacterScene() {
 
   function handleCarouselPrev() {
     if (selectedIndex <= 0) return;
-    const next = selectedIndex - 1;
-    if (isMobile) setGridOffset(Math.floor(next / MOBILE_GRID) * MOBILE_GRID);
-    setSelectedId(results[next].id);
+    selectCharacter(results[selectedIndex - 1].id);
   }
 
   function handleCarouselNext() {
     if (selectedIndex < results.length - 1) {
-      const next = selectedIndex + 1;
-      if (isMobile) setGridOffset(Math.floor(next / MOBILE_GRID) * MOBILE_GRID);
-      setSelectedId(results[next].id);
+      selectCharacter(results[selectedIndex + 1].id);
       return;
     }
     if (data?.info.next) setPage((p) => p + 1);
   }
-
-  useEffect(() => {
-    if (selectedId === null || results.length === 0) return;
-    const inVisible = visibleCharacters.some((c) => c.id === selectedId);
-    if (inVisible) return;
-
-    if (isMobile) {
-      const idx = results.findIndex((c) => c.id === selectedId);
-      if (idx !== -1) {
-        const nextOffset = Math.floor(idx / MOBILE_GRID) * MOBILE_GRID;
-        if (nextOffset !== gridOffset) setGridOffset(nextOffset);
-        return;
-      }
-    }
-
-    const first = visibleCharacters[0];
-    if (first) setSelectedId(first.id);
-  }, [gridOffset, visibleCharacters, selectedId, isMobile, results]);
 
   function showCharacterPreview(character: Character) {
     setData({
@@ -131,7 +155,7 @@ export function useCharacterScene() {
     visibleCharacters,
     selectedCharacter,
     selectedId,
-    setSelectedId,
+    selectCharacter,
     canScrollUp,
     canScrollDown,
     canCarouselPrev,
@@ -143,6 +167,6 @@ export function useCharacterScene() {
     handleCarouselPrev,
     handleCarouselNext,
     showCharacterPreview,
-    reload: load,
+    reload,
   };
 }
