@@ -25,7 +25,7 @@ export default function CharacterCard({ character }: Props) {
 
   function handleFavoriteToggle() {
     if (isFavorite && favorite) {
-      dispatch(removeFavoriteRequest(favorite.id));
+      dispatch(removeFavoriteRequest(character.id));
     } else {
       dispatch(
         addFavoriteRequest({

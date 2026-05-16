@@ -7,10 +7,8 @@ import {
   fetchFavoritesSuccess,
   fetchFavoritesFailure,
   addFavoriteRequest,
-  addFavoriteSuccess,
   addFavoriteFailure,
   removeFavoriteRequest,
-  removeFavoriteSuccess,
   removeFavoriteFailure,
 } from "./favoritesSlice";
 
@@ -27,17 +25,30 @@ function* handleAddFavorite(
   action: PayloadAction<Omit<Favorite, "id">>
 ) {
   try {
-    const favorite: Favorite = yield call(api.addFavorite, action.payload);
-    yield put(addFavoriteSuccess(favorite));
+    const existing: Favorite[] = yield call(api.getFavorites);
+    if (existing.some((f) => f.characterId === action.payload.characterId)) {
+      yield put(fetchFavoritesSuccess(existing));
+      return;
+    }
+    yield call(api.addFavorite, action.payload);
+    const favorites: Favorite[] = yield call(api.getFavorites);
+    yield put(fetchFavoritesSuccess(favorites));
   } catch (err) {
     yield put(addFavoriteFailure((err as Error).message));
   }
 }
 
 function* handleRemoveFavorite(action: PayloadAction<number>) {
+  const characterId = action.payload;
   try {
-    yield call(api.removeFavorite, action.payload);
-    yield put(removeFavoriteSuccess(action.payload));
+    yield call(api.removeFavoriteByCharacterId, characterId);
+  } catch (err) {
+    yield put(removeFavoriteFailure((err as Error).message));
+  }
+
+  try {
+    const favorites: Favorite[] = yield call(api.getFavorites);
+    yield put(fetchFavoritesSuccess(favorites));
   } catch (err) {
     yield put(removeFavoriteFailure((err as Error).message));
   }

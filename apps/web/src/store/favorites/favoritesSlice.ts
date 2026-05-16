@@ -29,9 +29,14 @@ const favoritesSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-    addFavoriteRequest(state) {
-      state.loading = true;
-      state.error = null;
+    addFavoriteRequest: {
+      reducer(state) {
+        state.loading = true;
+        state.error = null;
+      },
+      prepare(payload: Omit<Favorite, "id">) {
+        return { payload };
+      },
     },
     addFavoriteSuccess(state, action: PayloadAction<Favorite>) {
       state.items.push(action.payload);
@@ -41,9 +46,14 @@ const favoritesSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-    removeFavoriteRequest(state) {
-      state.loading = true;
-      state.error = null;
+    removeFavoriteRequest: {
+      reducer(state) {
+        state.loading = true;
+        state.error = null;
+      },
+      prepare(characterId: number) {
+        return { payload: characterId };
+      },
     },
     removeFavoriteSuccess(state, action: PayloadAction<number>) {
       state.items = state.items.filter((f) => f.id !== action.payload);
