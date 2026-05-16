@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "dev": "pnpm run --parallel dev:web dev:api",
+    "dev": "pnpm run dev:web & pnpm run dev:api",
     "dev:web": "pnpm --filter web dev",
     "dev:api": "pnpm --filter @rickmorty/json-server dev",
     "build": "pnpm --filter web build",
