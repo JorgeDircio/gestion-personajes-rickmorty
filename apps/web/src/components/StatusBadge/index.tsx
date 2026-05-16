@@ -21,15 +21,24 @@ const HERO_LABELS: Record<CharacterStatus, string> = {
 export default function StatusBadge({ status, variant = "default" }: Props) {
   const statusKey = status.toLowerCase() as "alive" | "dead" | "unknown";
   const label = variant === "hero" ? HERO_LABELS[status] : LABELS[status];
+  const isHero = variant === "hero";
 
   return (
     <span
       className={`${styles.badge} ${styles[statusKey]} ${
-        variant === "hero" ? styles.hero : ""
+        isHero ? styles.hero : ""
       }`}
     >
-      <span className={styles.dot} />
-      {label}
+      {isHero && status === "Alive" ? (
+        <span className={styles.statusIcon} aria-hidden />
+      ) : (
+        <span className={styles.dot} />
+      )}
+      {isHero ? (
+        <span className={styles.heroLabel}>{label}</span>
+      ) : (
+        label
+      )}
     </span>
   );
 }
