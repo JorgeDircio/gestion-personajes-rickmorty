@@ -1,6 +1,5 @@
+import { ENV } from "@/lib/env";
 import { Character, CharacterFilters, CharactersResponse } from "@/types";
-
-const BASE_URL = "https://rickandmortyapi.com/api";
 
 export async function fetchCharacters(
   filters: CharacterFilters = {}
@@ -10,13 +9,13 @@ export async function fetchCharacters(
   if (filters.status) params.set("status", filters.status);
   if (filters.page) params.set("page", String(filters.page));
 
-  const res = await fetch(`${BASE_URL}/character?${params.toString()}`);
+  const res = await fetch(`${ENV.RICK_MORTY_API_URL}/character?${params.toString()}`);
   if (!res.ok) throw new Error("Failed to fetch characters");
   return res.json();
 }
 
 export async function fetchCharacterById(id: number): Promise<Character> {
-  const res = await fetch(`${BASE_URL}/character/${id}`);
+  const res = await fetch(`${ENV.RICK_MORTY_API_URL}/character/${id}`);
   if (!res.ok) throw new Error(`Character ${id} not found`);
   return res.json();
 }
