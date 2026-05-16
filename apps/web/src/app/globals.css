@@ -39,6 +39,7 @@
   --shadow-card-hover: 0 24px 48px rgba(0, 0, 0, 0.75);
   --font-display: var(--font-bebas), "Bebas Neue", Impact, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-status: var(--font-roboto-condensed), "Roboto Condensed", sans-serif;
 }
 
 html,

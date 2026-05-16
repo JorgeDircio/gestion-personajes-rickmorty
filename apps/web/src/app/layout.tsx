@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bebas_Neue, Inter } from "next/font/google";
+import { Bebas_Neue, Inter, Roboto_Condensed } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "@/store/StoreProvider";
 
@@ -12,6 +12,12 @@ const bebas = Bebas_Neue({
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+});
+
+const robotoCondensed = Roboto_Condensed({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-roboto-condensed",
 });
 
 export const metadata: Metadata = {
@@ -27,7 +33,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${bebas.variable} ${inter.variable}`}
+      className={`${bebas.variable} ${inter.variable} ${robotoCondensed.variable}`}
       suppressHydrationWarning
     >
       <body suppressHydrationWarning>
