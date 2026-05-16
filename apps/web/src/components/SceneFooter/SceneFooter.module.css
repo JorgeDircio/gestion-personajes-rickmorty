@@ -1,0 +1,15 @@
+.root {
+  --sf-favs-w: 200;
+  --sf-favs-h: 40;
+  --sf-favs-l: 918;
+  --sf-favs-t: 893;
+  --sf-panel-t: 202;
+  --sf-panel-h: 720;
+  --sf-favs-t-desktop: calc(var(--sf-panel-t) + var(--sf-panel-h) - var(--sf-favs-h));
+  --sf-favs-frame-bottom: calc(var(--fh) - var(--sf-favs-t) - var(--sf-favs-h));
+}
+
+.favsMount {
+  container-type: size;
+  container-name: favs-slot;
+}

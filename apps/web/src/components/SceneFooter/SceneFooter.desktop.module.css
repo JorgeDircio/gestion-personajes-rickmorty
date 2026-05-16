@@ -1,0 +1,38 @@
+@media (min-width: 1025px) {
+  .root {
+    position: absolute;
+    inset: auto 0 0 0;
+    width: 100%;
+    height: 0;
+    overflow: visible;
+    pointer-events: none;
+    background: none;
+    box-shadow: none;
+  }
+
+  .grass {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--footer-h);
+    z-index: 3;
+    background: linear-gradient(180deg, #9edf25 3.03%, #1e2e00 177.63%);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+  }
+
+  .favsMount {
+    position: fixed;
+    left: calc(
+      50% - var(--canvas-w) / 2 + var(--sf-favs-l) / var(--fw) * var(--canvas-w)
+    );
+    top: calc(var(--sf-favs-t-desktop) / var(--fh) * var(--canvas-h));
+    width: calc(var(--sf-favs-w) / var(--fw) * var(--canvas-w));
+    height: calc(var(--sf-favs-h) / var(--fh) * var(--canvas-h));
+    z-index: 25;
+    pointer-events: auto;
+    isolation: isolate;
+  }
+}

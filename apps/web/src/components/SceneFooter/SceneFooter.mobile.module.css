@@ -1,0 +1,36 @@
+@media (max-width: 1024px) {
+  .root {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: calc(var(--m-bottom-chrome) * var(--mu));
+    z-index: 30;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .grass {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(var(--m-footer-h) * var(--mu));
+    background: linear-gradient(180deg, #9edf25 3.03%, #1e2e00 177.63%);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .favsMount {
+    position: relative;
+    z-index: 1;
+    width: calc(var(--sf-favs-w) * var(--mu));
+    height: calc(var(--m-favs-h) * var(--mu));
+    flex-shrink: 0;
+    pointer-events: auto;
+  }
+}
