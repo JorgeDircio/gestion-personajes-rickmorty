@@ -158,6 +158,10 @@
   z-index: 1;
 }
 
+.panel > section {
+  z-index: 0;
+}
+
 .right {
   flex: 0 0 50%;
   position: relative;
@@ -169,6 +173,7 @@
   container-name: ui-right;
   background: transparent;
   overflow: visible;
+  z-index: 1;
 }
 
 .right::before {

@@ -1,96 +1,208 @@
 
 .panel {
+  --ref-col-w: 511.5;
+  --ref-panel-h: 720;
+  --panel-l: 261;
+  --panel-t: 202;
+  --detail-img-w: 728.756287;
+  --detail-img-l: 34.92;
+  --detail-img-t: 197.95;
+  --footer-w: 540.143982;
+  --footer-h: 169.113922;
+  --identity-top: 14;
+  --identity-left: 50.13;
+  --stats-top: 110.38;
+  --stats-left: 86.96;
+  --stats-w: 391.81;
+  --footer-pad-b: 9.11;
+  --type-body-size: 20;
+  --type-body-leading: 19;
+  --type-stat-label-size: 14;
+  --type-stat-label-leading: 16;
+  --type-stat-value-size: 16;
+  --type-stat-value-leading: 18;
+  --stats-gap-x: 24;
+
   flex: 0 0 50%;
   min-width: 0;
   position: relative;
-  overflow: hidden;
+  overflow: clip;
   background: #111;
+  z-index: 0;
   container-type: size;
   container-name: detail-col;
 }
 
 .imageWrap {
-  position: relative;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  left: calc((var(--detail-img-l) - var(--panel-l)) / var(--ref-col-w) * 100%);
+  top: calc((var(--detail-img-t) - var(--panel-t)) / var(--ref-panel-h) * 100%);
+  width: calc(var(--detail-img-w) / var(--ref-col-w) * 100%);
+  aspect-ratio: 1;
+  height: auto;
+  overflow: hidden;
+  z-index: 0;
+  isolation: isolate;
+  container-type: size;
+  container-name: detail-img;
 }
 
 .image {
   object-fit: cover;
-  object-position: center top;
+  object-position: center center;
+}
+
+.imageVignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  box-shadow:
+    inset 0 calc(10 / var(--detail-img-w) * 100cqh) calc(10 / var(--detail-img-w) * 100cqh)
+      calc(15 / var(--detail-img-w) * 100cqw) rgba(0, 0, 0, 0.4),
+    inset calc(-15 / var(--detail-img-w) * 100cqw) 0 calc(15 / var(--detail-img-w) * 100cqw)
+      calc(10 / var(--detail-img-w) * 100cqh) rgba(0, 0, 0, 0.4);
+  background-repeat: no-repeat;
+  background-image:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.35) 0%, transparent 28%),
+    linear-gradient(to left, rgba(0, 0, 0, 0.35) 0%, transparent 28%);
+  background-size:
+    100% 32%,
+    32% 100%;
+  background-position:
+    top center,
+    right center;
 }
 
 .status {
   position: absolute;
-  top: 2.777778%;
-  left: 3.910431%;
-  z-index: 2;
+  left: calc(24 / 511.5 * 100%);
+  top: calc(73 / 720 * 100%);
+  width: calc(110 / 511.5 * 100%);
+  height: calc(28 / 720 * 100%);
+  container-type: size;
+  container-name: status-slot;
+  z-index: 3;
 }
 
-.dataBox {
+.status > * {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.footer {
   position: absolute;
   left: 0;
   bottom: 0;
   width: 100%;
-  height: 23.4875%;
+  height: calc(var(--footer-h) / var(--ref-panel-h) * 100%);
   z-index: 2;
-  background: var(--color-detail-data-bg);
-  padding: 2.222222% 4.691103%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1.111111%;
+  background-color: var(--color-detail-data-bg);
   box-sizing: border-box;
   overflow: hidden;
+  container-type: size;
+  container-name: detail-footer;
+}
+
+.identity {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+}
+
+.name,
+.species,
+.typeLine {
+  font-family: var(--font-status);
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: 0;
 }
 
 .name {
-  flex-shrink: 0;
-  font-family: var(--font-display);
-  font-size: 7.5cqh;
-  font-weight: 400;
-  letter-spacing: 0.02em;
+  margin: 0;
   color: var(--color-lime);
-  line-height: 1;
-  text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.subtitle {
-  flex-shrink: 0;
-  font-size: 1.944444cqh;
+.species,
+.typeLine {
+  margin: 0;
+}
+
+.species,
+.typeLine {
   color: var(--color-on-accent);
-  line-height: 1.2;
+}
+
+@container detail-footer (min-height: 1px) {
+  .identity {
+    top: calc(var(--identity-top) / var(--footer-h) * 100cqh);
+    left: calc(var(--identity-left) / var(--footer-w) * 100cqw);
+    width: calc(
+      (var(--stats-left) + var(--stats-w) - var(--identity-left)) / var(--footer-w) * 100cqw
+    );
+    gap: calc(2 / var(--footer-h) * 100cqh);
+  }
+
+  .name,
+  .species,
+  .typeLine {
+    font-size: calc(var(--type-body-size) / var(--footer-h) * 100cqh);
+    line-height: calc(var(--type-body-leading) / var(--footer-h) * 100cqh);
+  }
+
+  .stats {
+    top: calc(var(--stats-top) / var(--footer-h) * 100cqh);
+    left: calc(var(--stats-left) / var(--footer-w) * 100cqw);
+    width: calc(var(--stats-w) / var(--footer-w) * 100cqw);
+    bottom: calc(var(--footer-pad-b) / var(--footer-h) * 100cqh);
+    column-gap: calc(var(--stats-gap-x) / var(--footer-w) * 100cqw);
+  }
+
+  .stat dt {
+    width: 100%;
+    font-size: calc(var(--type-stat-label-size) / var(--footer-h) * 100cqh);
+    line-height: calc(var(--type-stat-label-leading) / var(--footer-h) * 100cqh);
+    font-weight: 600;
+    color: var(--color-lime);
+    text-transform: capitalize;
+    text-align: center;
+    margin-bottom: calc(4 / var(--footer-h) * 100cqh);
+  }
+
+  .stat dd {
+    width: 100%;
+    font-size: calc(var(--type-stat-value-size) / var(--footer-h) * 100cqh);
+    line-height: calc(var(--type-stat-value-leading) / var(--footer-h) * 100cqh);
+    color: var(--color-on-accent);
+    text-align: center;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    word-break: break-word;
+  }
 }
 
 .stats {
-  flex: 1;
-  min-height: 0;
-  width: 100%;
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1.388889% 1.5625%;
-  align-content: end;
+  align-content: start;
+  align-items: start;
 }
 
 .stat {
   min-width: 0;
-}
-
-.stat dt {
-  font-size: 1.527778cqh;
-  font-weight: 600;
-  color: var(--color-lime);
-  text-transform: capitalize;
-  margin-bottom: 0.277778cqh;
-}
-
-.stat dd {
-  font-size: 1.805556cqh;
-  color: var(--color-on-accent);
-  line-height: 1.2;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
 }
 
 .placeholder {
@@ -99,5 +211,5 @@
   justify-content: center;
   min-height: 100%;
   color: var(--color-text-muted);
-  font-size: 2.222222cqh;
+  font-size: calc(16 / var(--ref-panel-h) * 100cqh);
 }

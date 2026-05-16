@@ -28,11 +28,6 @@ export default function CharacterDetailPanel({ character }: Props) {
     );
   }
 
-  const subtitle = [character.species, character.type]
-    .filter(Boolean)
-    .join(" ")
-    .trim();
-
   return (
     <section className={styles.panel}>
       <div className={styles.imageWrap}>
@@ -40,37 +35,44 @@ export default function CharacterDetailPanel({ character }: Props) {
           src={character.image}
           alt={character.name}
           fill
-          sizes="(min-width: 1024px) 42vw, 100vw"
+          sizes="(min-width: 1440px) 512px, 50vw"
+          quality={90}
           className={styles.image}
           priority
           suppressHydrationWarning
         />
-        <div className={styles.status}>
-          <StatusBadge status={character.status} variant="hero" />
-        </div>
-        <div className={styles.dataBox}>
-          <h2 className={styles.name}>{character.name}</h2>
-          {subtitle ? <p className={styles.subtitle}>{subtitle}</p> : null}
-          <dl className={styles.stats}>
-            <div className={styles.stat}>
-              <dt>Origin</dt>
-              <dd>{character.origin.name}</dd>
-            </div>
-            <div className={styles.stat}>
-              <dt>Location</dt>
-              <dd>{character.location.name}</dd>
-            </div>
-            <div className={styles.stat}>
-              <dt>Gender</dt>
-              <dd>{formatGender(character.gender)}</dd>
-            </div>
-            <div className={styles.stat}>
-              <dt>Episodes</dt>
-              <dd>{character.episode.length}</dd>
-            </div>
-          </dl>
-        </div>
+        <div className={styles.imageVignette} aria-hidden />
       </div>
+      <div className={styles.status}>
+        <StatusBadge status={character.status} variant="hero" />
+      </div>
+      <footer className={styles.footer}>
+        <div className={styles.identity}>
+          <h2 className={styles.name}>{character.name}</h2>
+          <p className={styles.species}>{character.species}</p>
+          {character.type ? (
+            <p className={styles.typeLine}>{character.type}</p>
+          ) : null}
+        </div>
+        <dl className={styles.stats}>
+          <div className={styles.stat}>
+            <dt>Origin</dt>
+            <dd>{character.origin.name}</dd>
+          </div>
+          <div className={styles.stat}>
+            <dt>Location</dt>
+            <dd>{character.location.name}</dd>
+          </div>
+          <div className={styles.stat}>
+            <dt>Gender</dt>
+            <dd>{formatGender(character.gender)}</dd>
+          </div>
+          <div className={styles.stat}>
+            <dt>Episodes</dt>
+            <dd>{character.episode.length}</dd>
+          </div>
+        </dl>
+      </footer>
     </section>
   );
 }
