@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import styles from "./SearchBar.module.css";
 
 interface Props {
@@ -37,6 +38,17 @@ export default function SearchBar({ onSearch }: Props) {
         onChange={(e) => setName(e.target.value)}
         aria-label="Buscar personaje"
       />
+      <span className={styles.profile} aria-hidden suppressHydrationWarning>
+        <Image
+          src="/images/user.svg"
+          alt=""
+          width={28}
+          height={28}
+          unoptimized
+          className={styles.profileIcon}
+          suppressHydrationWarning
+        />
+      </span>
     </form>
   );
 }

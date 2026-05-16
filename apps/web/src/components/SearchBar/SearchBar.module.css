@@ -1,22 +1,29 @@
-
 .form {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   height: 100%;
+  min-height: 100%;
+  padding: 0 16px;
+  box-sizing: border-box;
   container-type: size;
   container-name: search;
+  border-radius: 8px;
+  border: 1px solid var(--color-lime);
+  background: transparent;
 }
 
 .icon {
-  position: absolute;
-  left: 5.833333%;
-  top: 50%;
-  transform: translateY(-50%);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
   color: var(--color-lime);
   pointer-events: none;
-  display: flex;
-  width: 8.333333%;
-  height: 35.714286%;
 }
 
 .icon svg {
@@ -24,23 +31,53 @@
   height: 100%;
 }
 
+.profile {
+  flex-shrink: 0;
+  display: none;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.profileIcon {
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+
 .input {
+  flex: 1;
+  min-width: 0;
   width: 100%;
   height: 100%;
-  padding: 0 5.833333% 0 17.5%;
-  border-radius: var(--radius-pill);
-  border: 3.571429cqh solid var(--color-lime);
-  background: var(--color-search-bg);
-  color: var(--color-text);
-  font-size: 25cqh;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-on-accent);
+  font-family: var(--font-status);
+  font-weight: 400;
+  font-style: normal;
+  font-size: 14px;
+  line-height: 150%;
+  letter-spacing: 0;
   outline: none;
-  transition: box-shadow 0.2s, border-color 0.2s;
 }
 
 .input::placeholder {
-  color: var(--color-text-muted);
+  color: var(--color-lime);
+  opacity: 1;
 }
 
-.input:focus {
-  box-shadow: 0 0 0 5.357143% rgba(118, 221, 0, 0.25);
+.form:focus-within {
+  box-shadow: 0 0 0 2px rgba(118, 221, 0, 0.35);
+}
+
+@media (max-width: 1024px) {
+  .profile {
+    display: flex;
+  }
 }
