@@ -1,0 +1,27 @@
+.btn {
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15.555556%;
+  background: var(--color-panel-dark);
+  color: var(--color-text);
+  flex-shrink: 0;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn:hover:not(:disabled) {
+  color: var(--color-lime);
+}
+
+.btn:active:not(:disabled) {
+  background: var(--color-card);
+  color: var(--color-lime);
+}
+
+.btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}

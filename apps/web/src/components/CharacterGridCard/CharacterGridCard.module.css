@@ -1,0 +1,123 @@
+
+.cardShell {
+  container-type: size;
+  container-name: card;
+  width: 100%;
+  aspect-ratio: 190 / 226;
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--color-card);
+  border-radius: calc(30 / 226 * 100cqh);
+  border: calc(2 / 190 * 100cqw) solid transparent;
+  box-shadow:
+    calc(15 / 190 * 100cqw) calc(15 / 226 * 100cqh) calc(30 / 226 * 100cqh) 0
+    var(--color-card-shadow);
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    transform 0.2s,
+    border-color 0.2s;
+}
+
+.card:hover {
+  transform: translateY(calc(-2 / 226 * 100cqh));
+}
+
+.selected {
+  border-color: var(--color-border-selected);
+}
+
+.name {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(47 / 226 * 100cqh);
+  margin: 0;
+  padding: 0 calc(24 / 190 * 100cqw);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: calc(14 / 226 * 100cqh);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--color-on-accent);
+  text-align: center;
+  background: var(--color-card-header);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.imageWrap {
+  position: absolute;
+  left: calc(24 / 190 * 100cqw);
+  top: calc(47 / 226 * 100cqh);
+  width: calc(145 / 190 * 100cqw);
+  height: calc(145 / 226 * 100cqh);
+  overflow: hidden;
+  background: #2a2040;
+  z-index: 0;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.like {
+  position: absolute;
+  left: calc(24 / 190 * 100cqw);
+  width: calc(145 / 190 * 100cqw);
+  bottom: calc(8 / 226 * 100cqh);
+  height: calc(26 / 226 * 100cqh);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(6 / 190 * 100cqw);
+  padding: 0;
+  color: var(--color-on-accent);
+  font-size: calc(12 / 226 * 100cqh);
+  font-weight: 500;
+  background: none;
+  border: none;
+  border-radius: 0;
+  transition: opacity 0.2s;
+  z-index: 1;
+}
+
+.like:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.likeActive {
+  color: var(--color-on-accent);
+}
+
+.heartIcon {
+  display: block;
+  width: calc(18 / 190 * 100cqw);
+  height: calc(18 / 190 * 100cqw);
+  flex-shrink: 0;
+  background-color: var(--color-on-accent);
+  mask: url("/images/heart-red.svg") center / contain no-repeat;
+  -webkit-mask: url("/images/heart-red.svg") center / contain no-repeat;
+  transition: background-color 0.2s;
+}
+
+.likeActive .heartIcon {
+  background-color: var(--color-heart-active);
+}
+
+.like:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,0 +1,28 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--border-radius);
+  border: 1.5px solid var(--color-accent);
+  background: transparent;
+  color: var(--color-accent);
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.btn.active {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

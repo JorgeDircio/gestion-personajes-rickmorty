@@ -1,0 +1,35 @@
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem 0;
+}
+
+.btn {
+  padding: 0.5rem 1.2rem;
+  border-radius: var(--border-radius);
+  border: 1.5px solid var(--color-accent);
+  background: transparent;
+  color: var(--color-accent);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.info {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  min-width: 60px;
+  text-align: center;
+}
