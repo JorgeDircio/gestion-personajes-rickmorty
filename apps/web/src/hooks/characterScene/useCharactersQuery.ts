@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { CharactersResponse } from "@/types";
 import { fetchCharacters } from "@/services/rickmortyApi";
 import { EMPTY_CHARACTER_RESULTS } from "@/lib/constants";
@@ -9,6 +9,7 @@ import type { CharactersQueryState } from "./types";
 export function useCharactersQuery(
   onResultsLoaded?: (firstCharacterId: number | null) => void
 ): CharactersQueryState {
+  const [isSearchPending, startSearchTransition] = useTransition();
   const [data, setData] = useState<CharactersResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,10 +58,15 @@ export function useCharactersQuery(
     void fetchCharactersPage();
   }, [fetchCharactersPage]);
 
-  function handleSearch(name: string) {
-    setPage(1);
-    setNameFilter(name);
-  }
+  const handleSearch = useCallback(
+    (name: string) => {
+      startSearchTransition(() => {
+        setPage(1);
+        setNameFilter(name);
+      });
+    },
+    [startSearchTransition]
+  );
 
   function requestNextPage() {
     setPage((current) => current + 1);
@@ -72,6 +78,7 @@ export function useCharactersQuery(
     error,
     results,
     hasNextPage: Boolean(data?.info.next),
+    searchPending: isSearchPending,
     handleSearch,
     reload,
     setData,

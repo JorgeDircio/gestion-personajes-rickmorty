@@ -6,9 +6,10 @@ import styles from "./SearchBar.module.css";
 
 interface Props {
   onSearch: (name: string) => void;
+  pending?: boolean;
 }
 
-export default function SearchBar({ onSearch }: Props) {
+export default function SearchBar({ onSearch, pending = false }: Props) {
   const [name, setName] = useState("");
 
   function handleSubmit(e: React.FormEvent) {
@@ -17,7 +18,11 @@ export default function SearchBar({ onSearch }: Props) {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form
+      className={`${styles.form} ${pending ? styles.formPending : ""}`}
+      onSubmit={handleSubmit}
+      aria-busy={pending}
+    >
       <span className={styles.icon} aria-hidden suppressHydrationWarning>
         <svg
           viewBox="0 0 24 24"
@@ -37,6 +42,7 @@ export default function SearchBar({ onSearch }: Props) {
         value={name}
         onChange={(e) => setName(e.target.value)}
         aria-label="Buscar personaje"
+        disabled={pending}
       />
       <span className={styles.profile} aria-hidden suppressHydrationWarning>
         <Image

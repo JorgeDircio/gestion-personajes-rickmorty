@@ -57,6 +57,7 @@ export function useCharacterScene() {
     canCarouselPrev: selection.canCarouselPrev,
     canCarouselNext: selection.canCarouselNext,
     hasNextPage: query.hasNextPage,
+    searchPending: query.searchPending,
     handleSearch: query.handleSearch,
     handleScrollUp: grid.handleScrollUp,
     handleScrollDown: grid.handleScrollDown,

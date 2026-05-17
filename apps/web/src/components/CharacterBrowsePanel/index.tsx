@@ -11,6 +11,7 @@ interface Props {
   selectedCharacter: Character | null;
   favoritesLoading: boolean;
   isFavorite: (characterId: number) => boolean;
+  searchPending?: boolean;
   onSearch: (name: string) => void;
   onSelectCharacter: (id: number) => void;
   onToggleFavorite: (character: Character) => void;
@@ -27,6 +28,7 @@ export default function CharacterBrowsePanel({
   selectedCharacter,
   favoritesLoading,
   isFavorite,
+  searchPending = false,
   onSearch,
   onSelectCharacter,
   onToggleFavorite,
@@ -38,7 +40,7 @@ export default function CharacterBrowsePanel({
   return (
     <div className={styles.right}>
       <div className={styles.searchWrap}>
-        <SearchBar onSearch={onSearch} />
+        <SearchBar onSearch={onSearch} pending={searchPending || loading} />
       </div>
 
       {loading && <p className={styles.message}>Cargando personajes...</p>}

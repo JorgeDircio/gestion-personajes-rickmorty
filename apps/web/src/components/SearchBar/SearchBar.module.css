@@ -76,6 +76,15 @@
   box-shadow: 0 0 0 2px rgba(118, 221, 0, 0.35);
 }
 
+.formPending {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+.formPending .input {
+  cursor: wait;
+}
+
 @media (max-width: 1024px) {
   .profile {
     display: flex;

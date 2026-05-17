@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useOptimistic,
+  useState,
+  useTransition,
+} from "react";
 import { Character, Favorite } from "@/types";
 import { favoriteToPreviewCharacter } from "@/lib/favoriteToCharacter";
 import type { CharacterSceneNavigation } from "@/hooks/characterScene/types";
@@ -10,6 +16,26 @@ import {
   fetchFavoritesRequest,
   removeFavoriteRequest,
 } from "@/store/favorites/favoritesSlice";
+
+type OptimisticFavoriteAction =
+  | { type: "add"; favorite: Omit<Favorite, "id"> }
+  | { type: "remove"; characterId: number };
+
+function applyFavoriteOptimistic(
+  state: Favorite[],
+  action: OptimisticFavoriteAction
+): Favorite[] {
+  if (action.type === "remove") {
+    return state.filter((f) => f.characterId !== action.characterId);
+  }
+  if (state.some((f) => f.characterId === action.favorite.characterId)) {
+    return state;
+  }
+  return [
+    ...state,
+    { ...action.favorite, id: -action.favorite.characterId },
+  ];
+}
 
 export function useFavoriteActions({
   results,
@@ -21,6 +47,11 @@ export function useFavoriteActions({
   const { items: favorites, loading: favoritesLoading } = useAppSelector(
     (s) => s.favorites
   );
+  const [optimisticFavorites, applyOptimistic] = useOptimistic(
+    favorites,
+    applyFavoriteOptimistic
+  );
+  const [, startFavoriteTransition] = useTransition();
   const [previewId, setPreviewId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -29,8 +60,8 @@ export function useFavoriteActions({
 
   const isFavorite = useCallback(
     (characterId: number) =>
-      favorites.some((f) => f.characterId === characterId),
-    [favorites]
+      optimisticFavorites.some((f) => f.characterId === characterId),
+    [optimisticFavorites]
   );
 
   const clearPreviewIfNeeded = useCallback(
@@ -45,22 +76,33 @@ export function useFavoriteActions({
 
   const handleToggleFavorite = useCallback(
     (character: Character) => {
-      if (isFavorite(character.id)) {
-        dispatch(removeFavoriteRequest(character.id));
-        clearPreviewIfNeeded(character.id);
-        return;
-      }
-      dispatch(
-        addFavoriteRequest({
-          characterId: character.id,
-          name: character.name,
-          image: character.image,
-          status: character.status,
-          species: character.species,
-        })
-      );
+      const favoritePayload = {
+        characterId: character.id,
+        name: character.name,
+        image: character.image,
+        status: character.status,
+        species: character.species,
+      };
+
+      startFavoriteTransition(() => {
+        if (isFavorite(character.id)) {
+          applyOptimistic({ type: "remove", characterId: character.id });
+          dispatch(removeFavoriteRequest(character.id));
+          clearPreviewIfNeeded(character.id);
+          return;
+        }
+
+        applyOptimistic({ type: "add", favorite: favoritePayload });
+        dispatch(addFavoriteRequest(favoritePayload));
+      });
     },
-    [isFavorite, dispatch, clearPreviewIfNeeded]
+    [
+      isFavorite,
+      dispatch,
+      clearPreviewIfNeeded,
+      applyOptimistic,
+      startFavoriteTransition,
+    ]
   );
 
   const handleSelectFavorite = useCallback(
@@ -79,15 +121,18 @@ export function useFavoriteActions({
 
   const handleRemoveFavorite = useCallback(
     (characterId: number) => {
-      dispatch(removeFavoriteRequest(characterId));
-      clearPreviewIfNeeded(characterId);
+      startFavoriteTransition(() => {
+        applyOptimistic({ type: "remove", characterId });
+        dispatch(removeFavoriteRequest(characterId));
+        clearPreviewIfNeeded(characterId);
+      });
     },
-    [dispatch, clearPreviewIfNeeded]
+    [dispatch, clearPreviewIfNeeded, applyOptimistic, startFavoriteTransition]
   );
 
   return {
-    favorites,
-    favoritesLoading,
+    favorites: optimisticFavorites,
+    favoritesLoading: favoritesLoading && favorites.length === 0,
     isFavorite,
     handleToggleFavorite,
     handleSelectFavorite,

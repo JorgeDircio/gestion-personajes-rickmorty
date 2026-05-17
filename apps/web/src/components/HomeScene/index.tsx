@@ -62,6 +62,7 @@ export default function HomeScene() {
             selectedCharacter={scene.selectedCharacter}
             favoritesLoading={favorites.favoritesLoading}
             isFavorite={favorites.isFavorite}
+            searchPending={scene.searchPending}
             onSearch={scene.handleSearch}
             onSelectCharacter={scene.selectCharacter}
             onToggleFavorite={favorites.handleToggleFavorite}

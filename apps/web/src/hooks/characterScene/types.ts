@@ -14,6 +14,7 @@ export interface CharactersQueryState {
   error: string | null;
   results: Character[];
   hasNextPage: boolean;
+  searchPending: boolean;
   handleSearch: (name: string) => void;
   reload: () => void;
   setData: Dispatch<SetStateAction<CharactersResponse | null>>;
