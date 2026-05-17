@@ -6,8 +6,9 @@ import { DESKTOP_GRID_SIZE, MOBILE_GRID_SIZE } from "@/lib/constants";
 import { useCharacterGrid } from "@/hooks/characterScene/useCharacterGrid";
 import { useCharacterSelection } from "@/hooks/characterScene/useCharacterSelection";
 import { useCharactersQuery } from "@/hooks/characterScene/useCharactersQuery";
+import { CharactersResponse } from "@/types";
 
-export function useCharacterScene() {
+export function useCharacterScene(initialCharacters?: CharactersResponse | null) {
   const isMobile = useIsMobile();
   const gridSize = isMobile ? MOBILE_GRID_SIZE : DESKTOP_GRID_SIZE;
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -18,7 +19,7 @@ export function useCharacterScene() {
     setSelectedId(firstId);
   }, []);
 
-  const query = useCharactersQuery(handleResultsLoaded);
+  const query = useCharactersQuery(handleResultsLoaded, initialCharacters);
 
   const grid = useCharacterGrid({
     results: query.results,

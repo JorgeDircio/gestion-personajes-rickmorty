@@ -26,8 +26,16 @@ export default function ScrollControls({
         disabled={!canScrollUp}
         aria-label="Ver personajes anteriores"
       >
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5">
-          <path d="M6 14l6-6 6 6" />
+        <svg
+          viewBox="0 0 24 24"
+          width="16"
+          height="16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          suppressHydrationWarning
+        >
+          <path d="M6 14l6-6 6 6" suppressHydrationWarning />
         </svg>
       </button>
       <button
@@ -37,8 +45,16 @@ export default function ScrollControls({
         disabled={!canScrollDown}
         aria-label="Ver más personajes"
       >
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5">
-          <path d="M6 10l6 6 6-6" />
+        <svg
+          viewBox="0 0 24 24"
+          width="16"
+          height="16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          suppressHydrationWarning
+        >
+          <path d="M6 10l6 6 6-6" suppressHydrationWarning />
         </svg>
       </button>
     </div>

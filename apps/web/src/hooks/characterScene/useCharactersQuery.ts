@@ -1,20 +1,27 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { CharactersResponse } from "@/types";
 import { fetchCharacters } from "@/services/rickmortyApi";
 import { EMPTY_CHARACTER_RESULTS } from "@/lib/constants";
 import type { CharactersQueryState } from "./types";
 
 export function useCharactersQuery(
-  onResultsLoaded?: (firstCharacterId: number | null) => void
+  onResultsLoaded?: (firstCharacterId: number | null) => void,
+  initialData?: CharactersResponse | null
 ): CharactersQueryState {
   const [isSearchPending, startSearchTransition] = useTransition();
-  const [data, setData] = useState<CharactersResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<CharactersResponse | null>(
+    initialData ?? null
+  );
+  const [loading, setLoading] = useState(initialData == null);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [nameFilter, setNameFilter] = useState("");
+  const skipInitialFetchRef = useRef(initialData != null);
+  const initialFirstCharacterIdRef = useRef(
+    initialData?.results[0]?.id ?? null
+  );
 
   const results = useMemo(
     () => data?.results ?? EMPTY_CHARACTER_RESULTS,
@@ -45,6 +52,14 @@ export function useCharactersQuery(
   );
 
   useEffect(() => {
+    if (skipInitialFetchRef.current && page === 1 && !nameFilter) {
+      skipInitialFetchRef.current = false;
+      queueMicrotask(() => {
+        onResultsLoaded?.(initialFirstCharacterIdRef.current);
+      });
+      return;
+    }
+
     let cancelled = false;
     queueMicrotask(() => {
       void fetchCharactersPage(() => cancelled);
@@ -52,7 +67,7 @@ export function useCharactersQuery(
     return () => {
       cancelled = true;
     };
-  }, [fetchCharactersPage]);
+  }, [fetchCharactersPage, page, nameFilter, onResultsLoaded]);
 
   const reload = useCallback(() => {
     void fetchCharactersPage();

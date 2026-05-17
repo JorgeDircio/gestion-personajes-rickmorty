@@ -44,9 +44,8 @@ export function useFavoriteActions({
   reload,
 }: CharacterSceneNavigation) {
   const dispatch = useAppDispatch();
-  const { items: favorites, loading: favoritesLoading } = useAppSelector(
-    (s) => s.favorites
-  );
+  const { items: favorites, loading: favoritesLoading, error: favoritesError } =
+    useAppSelector((s) => s.favorites);
   const [optimisticFavorites, applyOptimistic] = useOptimistic(
     favorites,
     applyFavoriteOptimistic
@@ -133,6 +132,7 @@ export function useFavoriteActions({
   return {
     favorites: optimisticFavorites,
     favoritesLoading: favoritesLoading && favorites.length === 0,
+    favoritesError,
     isFavorite,
     handleToggleFavorite,
     handleSelectFavorite,

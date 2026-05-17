@@ -1,3 +1,20 @@
+.networkAlert {
+  position: fixed;
+  top: 0.75rem;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 100;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  max-width: min(90vw, 32rem);
+  border-radius: 8px;
+  background: rgba(180, 40, 40, 0.95);
+  color: #fff;
+  font-size: 0.875rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
 .scene {
   --bp-desktop-min: 1025;
   --fw: 1440;
