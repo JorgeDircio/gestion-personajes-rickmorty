@@ -45,10 +45,10 @@ describe("favoritesSlice", () => {
   });
 
   describe("addFavorite", () => {
-    it("addFavoriteRequest sets loading and clears error", () => {
+    it("addFavoriteRequest clears error without blocking the grid", () => {
       const payload = { characterId: 1, name: "Rick", image: "", status: "Alive" as const, species: "Human" };
       const state = reducer({ ...initialState, error: "prev" }, addFavoriteRequest(payload));
-      expect(state.loading).toBe(true);
+      expect(state.loading).toBe(false);
       expect(state.error).toBeNull();
     });
 
@@ -75,9 +75,9 @@ describe("favoritesSlice", () => {
   });
 
   describe("removeFavorite", () => {
-    it("removeFavoriteRequest sets loading and clears error", () => {
+    it("removeFavoriteRequest clears error without blocking the grid", () => {
       const state = reducer({ ...initialState, error: "prev" }, removeFavoriteRequest(42));
-      expect(state.loading).toBe(true);
+      expect(state.loading).toBe(false);
       expect(state.error).toBeNull();
     });
 

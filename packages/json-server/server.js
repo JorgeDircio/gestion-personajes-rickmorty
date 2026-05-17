@@ -7,7 +7,7 @@ const router = jsonServer.router(dbPath);
 const middlewares = jsonServer.defaults();
 
 const PORT = Number(process.env.PORT) || 3001;
-const HOST = process.env.HOST || "localhost";
+const HOST = process.env.HOST || "127.0.0.1";
 
 server.use(middlewares);
 server.use(jsonServer.bodyParser);

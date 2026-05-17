@@ -1,12 +1,18 @@
 import { ENV } from "@/lib/env";
+import { parseJsonResponse } from "@/lib/parseJsonResponse";
 import { Favorite } from "@/types";
 
 const fetchOptions: RequestInit = { cache: "no-store" };
 
+function favoritesUrl(path = ""): string {
+  const base = ENV.JSON_SERVER_URL.replace(/\/$/, "");
+  return path ? `${base}/favorites/${path}` : `${base}/favorites`;
+}
+
 export async function getFavorites(): Promise<Favorite[]> {
-  const res = await fetch(`${ENV.JSON_SERVER_URL}/favorites`, fetchOptions);
+  const res = await fetch(favoritesUrl(), fetchOptions);
   if (!res.ok) throw new Error("Failed to fetch favorites");
-  return res.json();
+  return parseJsonResponse<Favorite[]>(res);
 }
 
 export async function addFavorite(
@@ -19,26 +25,23 @@ export async function addFavorite(
     status: favorite.status,
     species: favorite.species,
   };
-  const res = await fetch(`${ENV.JSON_SERVER_URL}/favorites`, {
+  const res = await fetch(favoritesUrl(), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
     ...fetchOptions,
   });
   if (!res.ok) throw new Error("Failed to add favorite");
-  return res.json();
+  return parseJsonResponse<Favorite>(res);
 }
 
 export async function removeFavoriteByCharacterId(
   characterId: number
 ): Promise<void> {
-  const res = await fetch(
-    `${ENV.JSON_SERVER_URL}/favorites/by-character/${characterId}`,
-    {
-      method: "DELETE",
-      ...fetchOptions,
-    }
-  );
+  const res = await fetch(favoritesUrl(`by-character/${characterId}`), {
+    method: "DELETE",
+    ...fetchOptions,
+  });
   if (res.status === 404) return;
   if (!res.ok) {
     const error = new Error("Failed to remove favorite") as Error & {

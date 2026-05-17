@@ -31,7 +31,6 @@ const favoritesSlice = createSlice({
     },
     addFavoriteRequest: {
       reducer(state) {
-        state.loading = true;
         state.error = null;
       },
       prepare(payload: Omit<Favorite, "id">) {
@@ -52,7 +51,6 @@ const favoritesSlice = createSlice({
     },
     removeFavoriteRequest: {
       reducer(state) {
-        state.loading = true;
         state.error = null;
       },
       prepare(characterId: number) {
