@@ -115,4 +115,75 @@ describe("useFavoriteActions", () => {
       false
     );
   });
+
+  it("handleSelectFavorite calls selectCharacter when character is in the results list", async () => {
+    jest.spyOn(api, "getFavorites").mockResolvedValue([mockFavorite]);
+    const navigation = { ...sceneNavigation, results: [mockCharacter] };
+    const Wrapper = createWrapper([mockFavorite]);
+
+    const { result } = renderHook(() => useFavoriteActions(navigation), {
+      wrapper: Wrapper,
+    });
+
+    act(() => {
+      result.current.handleSelectFavorite(mockFavorite);
+    });
+
+    expect(navigation.selectCharacter).toHaveBeenCalledWith(42);
+    expect(navigation.showCharacterPreview).not.toHaveBeenCalled();
+  });
+
+  it("handleSelectFavorite calls showCharacterPreview when character is not in results", async () => {
+    jest.spyOn(api, "getFavorites").mockResolvedValue([mockFavorite]);
+    const navigation = { ...sceneNavigation, results: [] };
+    const Wrapper = createWrapper([mockFavorite]);
+
+    const { result } = renderHook(() => useFavoriteActions(navigation), {
+      wrapper: Wrapper,
+    });
+
+    act(() => {
+      result.current.handleSelectFavorite(mockFavorite);
+    });
+
+    expect(navigation.showCharacterPreview).toHaveBeenCalledTimes(1);
+    const preview = navigation.showCharacterPreview.mock.calls[0][0];
+    expect(preview.id).toBe(42);
+    expect(navigation.selectCharacter).not.toHaveBeenCalled();
+  });
+
+  it("handleRemoveFavorite removes the favorite optimistically", async () => {
+    jest.spyOn(api, "removeFavoriteByCharacterId").mockResolvedValue(undefined);
+    const Wrapper = createWrapper([mockFavorite]);
+
+    const { result } = renderHook(
+      () => useFavoriteActions(sceneNavigation),
+      { wrapper: Wrapper }
+    );
+
+    expect(result.current.isFavorite(42)).toBe(true);
+
+    await act(async () => {
+      result.current.handleRemoveFavorite(42);
+    });
+
+    await waitFor(() => {
+      expect(result.current.isFavorite(42)).toBe(false);
+    });
+    expect(api.removeFavoriteByCharacterId).toHaveBeenCalledWith(42);
+  });
+
+  it("favoritesLoading is false once favorites are fetched", async () => {
+    jest.spyOn(api, "getFavorites").mockResolvedValue([]);
+    const Wrapper = createWrapper();
+
+    const { result } = renderHook(
+      () => useFavoriteActions(sceneNavigation),
+      { wrapper: Wrapper }
+    );
+
+    await waitFor(() => {
+      expect(result.current.favoritesLoading).toBe(false);
+    });
+  });
 });
