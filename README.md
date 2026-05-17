@@ -1,6 +1,6 @@
 # Gestión de personajes — Rick & Morty
 
-Construí esta app para explorar personajes con la [API pública de Rick and Morty](https://rickandmortyapi.com/) y guardar favoritos en un JSON Server local. El frontend va en Next.js; la persistencia de favoritos vive en `packages/json-server`.
+App para explorar personajes de [Rick and Morty](https://rickandmortyapi.com/) y gestionar favoritos con persistencia local. El frontend está en Next.js (`apps/web`); la API de favoritos corre en JSON Server (`packages/json-server`).
 
 **Stack:** Next.js 16, React 19, TypeScript, CSS Modules, Redux Toolkit y Redux Saga.
 
@@ -8,8 +8,8 @@ Construí esta app para explorar personajes con la [API pública de Rick and Mor
 
 | Recurso | Origen | Motivo |
 |---------|--------|--------|
-| **Personajes** (listado, búsqueda, paginación) | [Rick and Morty API](https://rickandmortyapi.com/api) | Catálogo oficial, paginado y estable; no duplico datos en local. |
-| **Favoritos** | JSON Server (`packages/json-server`, puerto 3001) | Persistencia local del reto: CRUD sobre `favorites` en `db.json`. |
+| **Personajes** (listado, búsqueda, paginación) | [Rick and Morty API](https://rickandmortyapi.com/api) | Catálogo oficial, paginado y estable; sin réplica local del catálogo. |
+| **Favoritos** | JSON Server (`packages/json-server`, puerto 3001) | CRUD sobre `favorites` en `db.json`. |
 
 Los favoritos se consumen desde el navegador vía proxy **`/api/json-server`** (Next reescribe a `http://127.0.0.1:3001`), así evitas CORS y problemas al abrir la app por IP de red. JSON Server **no** almacena personajes: solo favoritos (referencia al `characterId` y metadatos mínimos).
 
@@ -17,7 +17,7 @@ Los favoritos se consumen desde el navegador vía proxy **`/api/json-server`** (
 
 ## Prerrequisitos
 
-| Herramienta | Versión mínima | Para qué la uso |
+| Herramienta | Versión mínima | Uso en el proyecto |
 |-------------|----------------|-----------------|
 | **Node.js** | 20 LTS | Next.js y el servidor de favoritos |
 | **pnpm** | 10.x | Monorepo con workspaces (ver `packageManager` en `package.json`) |
@@ -118,11 +118,7 @@ copy apps\web\.env.example apps\web\.env.local
 Copy-Item apps\web\.env.example apps\web\.env.local
 ```
 
-Contenido de `apps/web/.env.local`:
-
-```
-NEXT_PUBLIC_JSON_SERVER_URL=http://127.0.0.1:3001
-```
+Por defecto **no hace falta** `.env.local`: el proxy `/api/json-server` ya apunta al puerto 3001. Solo crea el archivo si quieres llamar al JSON Server directamente (descomenta la variable en `.env.example`).
 
 ### 3. Levantar la aplicación
 
@@ -150,7 +146,7 @@ Abre [http://localhost:3000](http://localhost:3000).
 pnpm run dev
 ```
 
-Arranca web y API en paralelo. Uso las dos terminales cuando quiero ver logs separados.
+Arranca web y API en paralelo. Recomiendo dos terminales si necesitas inspeccionar logs por separado.
 
 #### Windows
 
@@ -226,20 +222,29 @@ cd apps/web && pnpm test:watch
 pnpm run test:coverage
 ```
 
-El reporte HTML queda en `apps/web/coverage/lcov-report/index.html`.
+Reporte HTML: `apps/web/coverage/lcov-report/index.html`.
 
-**Resumen de mi cobertura actual (~69 % líneas):**
+**Resumen global (última ejecución de `pnpm run test:coverage`):**
 
-| Área | Cobertura | Comentario |
-|------|-----------|------------|
-| `favoritesSlice`, `favoritesApi`, `StatusBadge`, `SearchBar`, `CharacterGridCard` | Alta (88–100 %) | Bien cubiertos con tests directos |
-| `favoritesSaga`, hooks de escena | Media–alta | Saga con store de prueba; `useCharacterScene` con fetch mockeado |
-| `useFavoriteActions` | ~73 % | Optimistic y toggle; faltan ramas de preview |
-| `useCharacterGrid`, `useCharacterSelection` | 34–52 % | Scroll, carrusel y preview casi sin tests |
-| `rickmortyApi` | ~16 % | Solo se ejercita vía mock en hooks, no el módulo aislado |
-| Componentes de escena (`HomeScene`, `CharacterBrowsePanel`, etc.) | 0 % | La lógica la probé en hooks; no hay tests de integración de UI |
+| Métrica | Valor |
+|---------|-------|
+| Tests | **104** pasando (14 suites) |
+| Líneas (`src/`) | **~81 %** |
+| Ramas | **~71 %** |
+| Funciones | **~80 %** |
 
-Los **57 tests** pasan. Prioricé slice, API de favoritos, saga y piezas con lógica de negocio. Lo que más subiría la cobertura sería tests del grid/carrusel y un test de `rickmortyApi` con `fetch` mockeado.
+**Por capa:**
+
+| Área | Líneas (aprox.) | Notas |
+|------|-----------------|-------|
+| `favoritesSlice`, `favoritesApi`, `favoritesSaga` | 88–100 % | CRUD y reducers cubiertos |
+| `rickmortyApi`, `parseJsonResponse`, `lib/` | 94–100 % | Fetch y utilidades con mocks |
+| Hooks (`useCharacterGrid`, `useCharacterSelection`, `useFavoriteActions`, `useCharacterScene`) | 92–100 % | Escena, carrusel, scroll y favoritos |
+| `useCharactersQuery` | ~85 % | Ramas de `initialData` y paginación parcialmente sin cubrir |
+| Componentes aislados (`SearchBar`, `CharacterGridCard`, `FavsTab`, `StatusBadge`) | 100 % | Interacción básica |
+| Composición de escena (`HomeScene`, `CharacterBrowsePanel`, `page.tsx`, store bootstrap) | 0–17 % | Sin tests de montaje; lógica delegada a hooks |
+
+Prioridad de tests: capa de dominio y hooks antes que árboles de UI completos. El siguiente salto de cobertura vendría de tests de integración ligeros sobre `HomeScene` o E2E con Playwright.
 
 ### Lint
 
@@ -249,23 +254,23 @@ pnpm run lint
 
 ---
 
-## Notas del desarrollo
+## Decisiones técnicas y roadmap
 
-**Lo que más me gustó:**
+**Aspectos destacados del diseño:**
 
-- Traducir el frame de Figma a un layout que escala bien en desktop y móvil, usando variables CSS y proporciones del canvas en lugar de acoplar todo a píxeles fijos.
-- Separar la pantalla en componentes con su propio CSS Module (`HomeScene`, grid, detalle, FAVS) y dejar la lógica en hooks pequeños (`useCharactersQuery`, grid, selección) en vez de un solo archivo difícil de mantener.
-- Conectar la API pública de Rick and Morty para personajes y un JSON Server local para favoritos, con Redux Saga manejando el flujo add/remove sin recargar toda la lista.
-- El feedback inmediato al marcar favoritos con `useOptimistic`: la UI responde al instante aunque el guardado en el servidor tarde un poco.
-- El contraste entre experiencias: grid con scroll en desktop, carrusel y gestos de navegación en móvil, manteniendo la misma fuente de datos detrás.
+- Layout responsive alineado al frame de referencia (variables CSS y proporciones del canvas, no solo píxeles fijos).
+- Componentes con CSS Module propio y hooks acotados en lugar de un contenedor monolítico.
+- Personajes desde API pública; favoritos locales con Saga (add/remove sin recargar toda la lista).
+- Feedback inmediato en favoritos (`useOptimistic`) y búsqueda no bloqueante (`useTransition`).
+- Experiencia dual: grid con scroll en desktop y carrusel en móvil sobre la misma fuente de datos.
 
-**Si tuviera más tiempo**, priorizaría esto:
+**Próximos pasos** (si hubiera más tiempo):
 
 - **Dockerizar el monorepo:** `docker compose` con servicios `web`, `json-server` y variables de entorno enlazadas, para levantar todo con un solo comando en cualquier máquina (hoy el setup es `pnpm install` + dos terminales).
 - **Backend real en lugar de JSON Server:** un servicio en Node (NestJS o Fastify) con PostgreSQL, migraciones y un contrato OpenAPI compartido con el frontend. JSON Server fue útil para iterar rápido, pero no da validación de negocio, auth ni concurrencia real.
 - **Capa de datos unificada:** llevar personajes y favoritos a React Query o RTK Query con caché, reintentos y estados de error consistentes, en lugar de mezclar hooks locales para personajes y Saga solo para favoritos.
-- **Pruebas de punta a punta:** Playwright cubriendo búsqueda, paginación, favoritos y responsive; complementarían los unitarios que ya tengo en slice, saga y componentes aislados.
+- **Pruebas de punta a punta:** Playwright cubriendo búsqueda, paginación, favoritos y responsive; complementarían los unitarios actuales en slice, saga y componentes aislados.
 - **CI en el repo:** pipeline con `lint`, `test` y `build` en cada push; opcionalmente despliegue preview de la web (Vercel) y de la API en un contenedor.
 - **Observabilidad y DX:** health checks en la API, logs estructurados y variables de entorno validadas al arranque (por ejemplo con Zod en `lib/env.ts`).
-- **Accesibilidad y rendimiento:** auditoría con axe, `loading="lazy"` en imágenes del grid (ya aplicado), fetch inicial en RSC y revisión de Core Web Vitals en móvil.
+- **Accesibilidad y rendimiento:** auditoría con axe, revisión de Core Web Vitals en móvil y tests de integración sobre la escena principal (`loading="lazy"` ya aplicado en el grid).
 - **Diseño system mínimo:** tokens de color y tipografía centralizados más allá de CSS Modules por pantalla, para escalar si el producto crece.
