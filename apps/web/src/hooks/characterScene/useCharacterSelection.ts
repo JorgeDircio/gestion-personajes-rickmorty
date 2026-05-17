@@ -12,6 +12,8 @@ interface Params {
   setData: Dispatch<SetStateAction<CharactersResponse | null>>;
   alignGridToCharacter: (id: number) => void;
   resetGrid: () => void;
+  hasPrevPage: boolean;
+  onRequestPrevPage: () => void;
 }
 
 export function useCharacterSelection({
@@ -22,6 +24,8 @@ export function useCharacterSelection({
   setData,
   alignGridToCharacter,
   resetGrid,
+  hasPrevPage,
+  onRequestPrevPage,
 }: Params) {
   const selectedCharacter = useMemo(
     () =>
@@ -53,8 +57,11 @@ export function useCharacterSelection({
   }
 
   function handleCarouselPrev() {
-    if (selectedIndex <= 0) return;
-    selectCharacter(results[selectedIndex - 1].id);
+    if (selectedIndex > 0) {
+      selectCharacter(results[selectedIndex - 1].id);
+      return;
+    }
+    if (hasPrevPage) onRequestPrevPage();
   }
 
   function handleCarouselNext(onRequestNextPage: () => void) {
@@ -67,7 +74,7 @@ export function useCharacterSelection({
 
   return {
     selectedCharacter,
-    canCarouselPrev: selectedIndex > 0,
+    canCarouselPrev: selectedIndex > 0 || hasPrevPage,
     canCarouselNext:
       selectedIndex >= 0 && selectedIndex < results.length - 1,
     selectCharacter,

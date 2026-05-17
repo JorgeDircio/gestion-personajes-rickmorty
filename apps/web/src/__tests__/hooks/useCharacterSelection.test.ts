@@ -30,6 +30,8 @@ function makeParams(overrides: Partial<Parameters<typeof useCharacterSelection>[
     setData: jest.fn(),
     alignGridToCharacter: jest.fn(),
     resetGrid: jest.fn(),
+    hasPrevPage: false,
+    onRequestPrevPage: jest.fn(),
     ...overrides,
   };
 }
@@ -61,9 +63,16 @@ describe("useCharacterSelection", () => {
   });
 
   describe("canCarouselPrev / canCarouselNext", () => {
-    it("canCarouselPrev is false when first character is selected", () => {
+    it("canCarouselPrev is false when first character is selected and no prev page", () => {
       const { result } = renderHook(() => useCharacterSelection(makeParams({ selectedId: 1 })));
       expect(result.current.canCarouselPrev).toBe(false);
+    });
+
+    it("canCarouselPrev is true on first character when hasPrevPage", () => {
+      const { result } = renderHook(() =>
+        useCharacterSelection(makeParams({ selectedId: 1, hasPrevPage: true }))
+      );
+      expect(result.current.canCarouselPrev).toBe(true);
     });
 
     it("canCarouselPrev is true when not on the first character", () => {
@@ -105,13 +114,28 @@ describe("useCharacterSelection", () => {
       expect(setSelectedId).toHaveBeenCalledWith(1);
     });
 
-    it("does nothing when already on the first character", () => {
+    it("does nothing when on the first character without prev page", () => {
       const setSelectedId = jest.fn();
+      const onRequestPrevPage = jest.fn();
       const { result } = renderHook(() =>
-        useCharacterSelection(makeParams({ selectedId: 1, setSelectedId }))
+        useCharacterSelection(
+          makeParams({ selectedId: 1, setSelectedId, onRequestPrevPage })
+        )
       );
       act(() => { result.current.handleCarouselPrev(); });
       expect(setSelectedId).not.toHaveBeenCalled();
+      expect(onRequestPrevPage).not.toHaveBeenCalled();
+    });
+
+    it("requests prev page when on the first character and hasPrevPage", () => {
+      const onRequestPrevPage = jest.fn();
+      const { result } = renderHook(() =>
+        useCharacterSelection(
+          makeParams({ selectedId: 1, hasPrevPage: true, onRequestPrevPage })
+        )
+      );
+      act(() => { result.current.handleCarouselPrev(); });
+      expect(onRequestPrevPage).toHaveBeenCalledTimes(1);
     });
   });
 

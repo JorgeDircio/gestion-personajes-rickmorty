@@ -29,7 +29,9 @@ function makeParams(overrides: Partial<Parameters<typeof useCharacterGrid>[0]> =
     setSelectedId: jest.fn(),
     isMobile: false,
     hasNextPage: false,
+    hasPrevPage: false,
     onRequestNextPage: jest.fn(),
+    onRequestPrevPage: jest.fn(),
     ...overrides,
   };
 }
@@ -146,6 +148,22 @@ describe("useCharacterGrid", () => {
       const { result } = renderHook(() => useCharacterGrid(makeParams()));
       act(() => { result.current.handleScrollUp(); });
       expect(result.current.visibleCharacters.map((c) => c.id)).toEqual([1, 2, 3, 4]);
+    });
+
+    it("calls onRequestPrevPage when at top and hasPrevPage", () => {
+      const onRequestPrevPage = jest.fn();
+      const { result } = renderHook(() =>
+        useCharacterGrid(makeParams({ hasPrevPage: true, onRequestPrevPage }))
+      );
+      act(() => { result.current.handleScrollUp(); });
+      expect(onRequestPrevPage).toHaveBeenCalledTimes(1);
+    });
+
+    it("canScrollUp is true at offset 0 when hasPrevPage", () => {
+      const { result } = renderHook(() =>
+        useCharacterGrid(makeParams({ hasPrevPage: true }))
+      );
+      expect(result.current.canScrollUp).toBe(true);
     });
   });
 

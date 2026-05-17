@@ -8,15 +8,21 @@ export interface CharacterSceneNavigation {
   reload: () => void;
 }
 
+export type PageNavigation = "initial" | "forward" | "backward";
+
 export interface CharactersQueryState {
   data: CharactersResponse | null;
   loading: boolean;
   error: string | null;
   results: Character[];
+  page: number;
   hasNextPage: boolean;
+  hasPrevPage: boolean;
   searchPending: boolean;
   handleSearch: (name: string) => void;
   reload: () => void;
   setData: Dispatch<SetStateAction<CharactersResponse | null>>;
   requestNextPage: () => void;
+  requestPrevPage: () => void;
+  consumePageNavigation: () => PageNavigation;
 }

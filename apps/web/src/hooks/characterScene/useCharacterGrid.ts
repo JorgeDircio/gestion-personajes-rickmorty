@@ -11,7 +11,9 @@ interface Params {
   setSelectedId: (id: number) => void;
   isMobile: boolean;
   hasNextPage: boolean;
+  hasPrevPage: boolean;
   onRequestNextPage: () => void;
+  onRequestPrevPage: () => void;
 }
 
 export function useCharacterGrid({
@@ -21,7 +23,9 @@ export function useCharacterGrid({
   setSelectedId,
   isMobile,
   hasNextPage,
+  hasPrevPage,
   onRequestNextPage,
+  onRequestPrevPage,
 }: Params) {
   const [gridOffset, setGridOffset] = useState(0);
 
@@ -32,6 +36,10 @@ export function useCharacterGrid({
 
   function resetGrid() {
     setGridOffset(0);
+  }
+
+  function scrollToEnd() {
+    setGridOffset(Math.max(0, results.length - gridSize));
   }
 
   function alignGridToCharacter(id: number) {
@@ -53,6 +61,10 @@ export function useCharacterGrid({
   }
 
   function handleScrollUp() {
+    if (gridOffset === 0 && hasPrevPage) {
+      onRequestPrevPage();
+      return;
+    }
     const nextOffset = Math.max(0, gridOffset - gridSize);
     setGridOffset(nextOffset);
     keepSelectionInView(nextOffset);
@@ -71,11 +83,12 @@ export function useCharacterGrid({
   return {
     gridOffset,
     visibleCharacters,
-    canScrollUp: gridOffset > 0,
+    canScrollUp: gridOffset > 0 || hasPrevPage,
     canScrollDown:
       gridOffset + gridSize < results.length ||
       (hasNextPage && gridOffset + gridSize >= results.length),
     resetGrid,
+    scrollToEnd,
     alignGridToCharacter,
     handleScrollUp,
     handleScrollDown,

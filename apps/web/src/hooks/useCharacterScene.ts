@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { DESKTOP_GRID_SIZE, MOBILE_GRID_SIZE } from "@/lib/constants";
 import { useCharacterGrid } from "@/hooks/characterScene/useCharacterGrid";
@@ -12,14 +12,12 @@ export function useCharacterScene(initialCharacters?: CharactersResponse | null)
   const isMobile = useIsMobile();
   const gridSize = isMobile ? MOBILE_GRID_SIZE : DESKTOP_GRID_SIZE;
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const gridApiRef = useRef({ resetGrid: () => {} });
+  const gridApiRef = useRef({
+    resetGrid: () => {},
+    scrollToEnd: () => {},
+  });
 
-  const handleResultsLoaded = useCallback((firstId: number | null) => {
-    gridApiRef.current.resetGrid();
-    setSelectedId(firstId);
-  }, []);
-
-  const query = useCharactersQuery(handleResultsLoaded, initialCharacters);
+  const query = useCharactersQuery(initialCharacters);
 
   const grid = useCharacterGrid({
     results: query.results,
@@ -28,12 +26,15 @@ export function useCharacterScene(initialCharacters?: CharactersResponse | null)
     setSelectedId,
     isMobile,
     hasNextPage: query.hasNextPage,
+    hasPrevPage: query.hasPrevPage,
     onRequestNextPage: query.requestNextPage,
+    onRequestPrevPage: query.requestPrevPage,
   });
 
   useEffect(() => {
     gridApiRef.current.resetGrid = grid.resetGrid;
-  }, [grid.resetGrid]);
+    gridApiRef.current.scrollToEnd = grid.scrollToEnd;
+  }, [grid.resetGrid, grid.scrollToEnd]);
 
   const selection = useCharacterSelection({
     results: query.results,
@@ -43,7 +44,33 @@ export function useCharacterScene(initialCharacters?: CharactersResponse | null)
     setData: query.setData,
     alignGridToCharacter: grid.alignGridToCharacter,
     resetGrid: grid.resetGrid,
+    hasPrevPage: query.hasPrevPage,
+    onRequestPrevPage: query.requestPrevPage,
   });
+
+  useEffect(() => {
+    if (query.loading || query.results.length === 0) return;
+
+    const direction = query.consumePageNavigation();
+    if (direction === "backward") {
+      gridApiRef.current.scrollToEnd();
+      setSelectedId(query.results[query.results.length - 1]?.id ?? null);
+      return;
+    }
+    if (direction === "forward") {
+      gridApiRef.current.resetGrid();
+      setSelectedId(query.results[0]?.id ?? null);
+      return;
+    }
+    if (selectedId === null) {
+      setSelectedId(query.results[0]?.id ?? null);
+    }
+  }, [
+    query.results,
+    query.loading,
+    query.consumePageNavigation,
+    selectedId,
+  ]);
 
   return {
     loading: query.loading,

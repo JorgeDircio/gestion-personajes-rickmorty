@@ -4,10 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from
 import { CharactersResponse } from "@/types";
 import { fetchCharacters } from "@/services/rickmortyApi";
 import { EMPTY_CHARACTER_RESULTS } from "@/lib/constants";
-import type { CharactersQueryState } from "./types";
+import type { CharactersQueryState, PageNavigation } from "./types";
 
 export function useCharactersQuery(
-  onResultsLoaded?: (firstCharacterId: number | null) => void,
   initialData?: CharactersResponse | null
 ): CharactersQueryState {
   const [isSearchPending, startSearchTransition] = useTransition();
@@ -19,14 +18,18 @@ export function useCharactersQuery(
   const [page, setPage] = useState(1);
   const [nameFilter, setNameFilter] = useState("");
   const skipInitialFetchRef = useRef(initialData != null);
-  const initialFirstCharacterIdRef = useRef(
-    initialData?.results[0]?.id ?? null
-  );
+  const pageNavigationRef = useRef<PageNavigation>("initial");
 
   const results = useMemo(
     () => data?.results ?? EMPTY_CHARACTER_RESULTS,
     [data]
   );
+
+  const consumePageNavigation = useCallback(() => {
+    const direction = pageNavigationRef.current;
+    pageNavigationRef.current = "initial";
+    return direction;
+  }, []);
 
   const fetchCharactersPage = useCallback(
     async (isCancelled: () => boolean = () => false) => {
@@ -39,7 +42,6 @@ export function useCharactersQuery(
         });
         if (isCancelled()) return;
         setData(result);
-        onResultsLoaded?.(result.results[0]?.id ?? null);
       } catch {
         if (isCancelled()) return;
         setError("No se encontraron personajes.");
@@ -48,15 +50,12 @@ export function useCharactersQuery(
         if (!isCancelled()) setLoading(false);
       }
     },
-    [page, nameFilter, onResultsLoaded]
+    [page, nameFilter]
   );
 
   useEffect(() => {
     if (skipInitialFetchRef.current && page === 1 && !nameFilter) {
       skipInitialFetchRef.current = false;
-      queueMicrotask(() => {
-        onResultsLoaded?.(initialFirstCharacterIdRef.current);
-      });
       return;
     }
 
@@ -67,7 +66,7 @@ export function useCharactersQuery(
     return () => {
       cancelled = true;
     };
-  }, [fetchCharactersPage, page, nameFilter, onResultsLoaded]);
+  }, [fetchCharactersPage, page, nameFilter]);
 
   const reload = useCallback(() => {
     void fetchCharactersPage();
@@ -76,6 +75,7 @@ export function useCharactersQuery(
   const handleSearch = useCallback(
     (name: string) => {
       startSearchTransition(() => {
+        pageNavigationRef.current = "forward";
         setPage(1);
         setNameFilter(name);
       });
@@ -83,20 +83,30 @@ export function useCharactersQuery(
     [startSearchTransition]
   );
 
-  function requestNextPage() {
+  const requestNextPage = useCallback(() => {
+    pageNavigationRef.current = "forward";
     setPage((current) => current + 1);
-  }
+  }, []);
+
+  const requestPrevPage = useCallback(() => {
+    pageNavigationRef.current = "backward";
+    setPage((current) => Math.max(1, current - 1));
+  }, []);
 
   return {
     data,
     loading,
     error,
     results,
+    page,
     hasNextPage: Boolean(data?.info.next),
+    hasPrevPage: page > 1,
     searchPending: isSearchPending,
     handleSearch,
     reload,
     setData,
     requestNextPage,
+    requestPrevPage,
+    consumePageNavigation,
   };
 }
