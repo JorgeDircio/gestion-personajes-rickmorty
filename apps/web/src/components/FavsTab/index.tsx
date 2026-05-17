@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Favorite } from "@/types";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { useClickOutside } from "@/hooks/useClickOutside";
 import styles from "./FavsTab.module.css";
 
 interface Props {
@@ -16,27 +18,11 @@ export default function FavsTab({
   onRemoveFavorite,
 }: Props) {
   const [open, setOpen] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const isDesktop = !useIsMobile();
   const rootRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1025px)");
-    const sync = () => setIsDesktop(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
+  const close = useCallback(() => setOpen(false), []);
 
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [open]);
+  useClickOutside(rootRef, close, open);
 
   return (
     <div

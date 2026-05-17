@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { MOBILE_MAX_WIDTH } from "@/lib/constants";
 
-const QUERY = "(max-width: 1024px)";
+const QUERY = `(max-width: ${MOBILE_MAX_WIDTH}px)`;
 
 export function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);

@@ -1,0 +1,73 @@
+.carouselNav {
+  display: none;
+}
+
+.carouselBtn {
+  display: none;
+}
+
+.carouselIcon {
+  display: block;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .carouselNav {
+    display: block;
+    position: fixed;
+    top: calc(571 * var(--mu));
+    left: 50%;
+    width: calc(var(--mfw) * var(--mu));
+    height: calc(32 * var(--mu));
+    margin-left: calc(var(--mfw) * var(--mu) / -2);
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  .carouselNav .carouselBtn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    width: calc(32 * var(--mu));
+    height: calc(32 * var(--mu));
+    overflow: visible;
+    border-radius: calc(4 * var(--mu));
+    border: none;
+    background: #7b7b7bb2;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    color: #fff;
+    pointer-events: auto;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .carouselNav .carouselIcon {
+    width: calc(40 * var(--mu));
+    height: calc(40 * var(--mu));
+  }
+
+  .carouselNav .carouselBtnPrev {
+    left: calc(12 * var(--mu));
+  }
+
+  .carouselNav .carouselBtnNext {
+    left: calc(316 * var(--mu));
+    right: auto;
+  }
+
+  .carouselNav .carouselBtn:hover:not(:disabled) {
+    color: var(--color-lime);
+  }
+
+  .carouselNav .carouselBtn:active:not(:disabled) {
+    background: #3a3a3ae6;
+    color: var(--color-lime);
+  }
+
+  .carouselNav .carouselBtn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}

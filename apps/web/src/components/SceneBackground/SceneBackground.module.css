@@ -1,0 +1,102 @@
+.bgViewport {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bgStars,
+.bgCharacters {
+  position: absolute;
+  inset: 0;
+}
+
+.bgStars {
+  z-index: 1;
+}
+
+.bgCharacters {
+  z-index: 2;
+}
+
+.bgStarsImg {
+  object-fit: cover;
+  object-position: 55% 0;
+}
+
+.bgCharactersImg {
+  object-fit: contain;
+  object-position: left bottom;
+}
+
+.bgCharactersImgMobile {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .bgViewport {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    z-index: 0;
+  }
+
+  .bgStars {
+    display: none;
+  }
+
+  .bgCharacters {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .bgCharactersImgDesktop {
+    display: none !important;
+  }
+
+  .bgCharactersImgMobile {
+    display: block !important;
+    object-fit: cover;
+    object-position: center top;
+  }
+}
+
+@media (min-width: 1025px) {
+  .bgViewport {
+    position: absolute;
+    inset: 0;
+    width: 100vw;
+    height: auto;
+  }
+
+  .bgStars {
+    display: block;
+  }
+
+  .bgCharacters {
+    position: absolute;
+    inset: 0;
+    width: auto;
+    height: auto;
+  }
+
+  .bgCharactersImgDesktop {
+    display: block !important;
+  }
+
+  .bgCharactersImgMobile {
+    display: none !important;
+  }
+
+  .bgCharactersImg {
+    object-fit: contain;
+    object-position: left bottom;
+  }
+}

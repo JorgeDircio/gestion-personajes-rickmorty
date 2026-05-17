@@ -9,13 +9,13 @@ import CharacterBrowsePanel from "@/components/CharacterBrowsePanel";
 import SceneBackground from "@/components/SceneBackground";
 import FavsTab from "@/components/FavsTab";
 import SceneFooter from "@/components/SceneFooter";
-import styles from "@/app/page.module.css";
+import styles from "./HomeScene.module.css";
 
 export default function HomeScene() {
   const scene = useCharacterScene();
   const favorites = useFavoriteActions({
     results: scene.results,
-    setSelectedId: scene.selectCharacter,
+    selectCharacter: scene.selectCharacter,
     showCharacterPreview: scene.showCharacterPreview,
     reload: scene.reload,
   });

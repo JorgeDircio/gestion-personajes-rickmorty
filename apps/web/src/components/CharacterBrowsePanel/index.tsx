@@ -2,7 +2,7 @@ import { Character } from "@/types";
 import CharacterGridCard from "@/components/CharacterGridCard";
 import SearchBar from "@/components/SearchBar";
 import ScrollControls from "@/components/ScrollControls";
-import styles from "@/app/page.module.css";
+import styles from "./CharacterBrowsePanel.module.css";
 
 interface Props {
   loading: boolean;

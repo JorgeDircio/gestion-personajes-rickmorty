@@ -20,43 +20,6 @@
   background: #000;
 }
 
-.bgViewport {
-  position: absolute;
-  inset: 0;
-  width: 100vw;
-  overflow: hidden;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.bgStars,
-.bgCharacters {
-  position: absolute;
-  inset: 0;
-}
-
-.bgStars {
-  z-index: 1;
-}
-
-.bgCharacters {
-  z-index: 2;
-}
-
-.bgStarsImg {
-  object-fit: cover;
-  object-position: 55% 0;
-}
-
-.bgCharactersImg {
-  object-fit: contain;
-  object-position: left bottom;
-}
-
-.bgCharactersImgMobile {
-  display: none;
-}
-
 .figmaCanvas {
   position: absolute;
   bottom: 0;
@@ -160,104 +123,6 @@
   display: contents;
 }
 
-.carouselNav {
-  display: none;
-}
-
-.carouselBtn {
-  display: none;
-}
-
-.carouselIcon {
-  display: block;
-  flex-shrink: 0;
-}
-
-.right {
-  flex: 0 0 50%;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 0;
-  container-type: size;
-  container-name: ui-right;
-  background: transparent;
-  overflow: visible;
-  z-index: 1;
-}
-
-.right::before {
-  content: "";
-  position: absolute;
-  left: var(--pct-char-bg-left-col);
-  top: var(--pct-char-bg-top);
-  width: var(--pct-char-bg-w-col);
-  height: var(--pct-char-bg-h-panel);
-  background: var(--color-characters-bg);
-  border-radius: 0 calc(24 / var(--panel-w) * 100%) 0 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.right > * {
-  position: relative;
-  z-index: 1;
-}
-
-.searchWrap {
-  position: absolute;
-  left: calc((911 - var(--panel-l) - var(--col-w)) / var(--col-w) * 100%);
-  top: var(--pct-search-top);
-  width: calc(240 / var(--col-w) * 100%);
-  aspect-ratio: 240 / 56;
-  z-index: 2;
-}
-
-.gridStack {
-  position: absolute;
-  left: var(--pct-grid-left-col);
-  top: var(--pct-grid-top);
-  width: var(--pct-grid-stack-w);
-  padding-right: calc(var(--pct-scroll-w) + 1%);
-  box-sizing: content-box;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, var(--pct-card-in-grid));
-  grid-auto-rows: auto;
-  column-gap: var(--pct-card-gap-in-grid);
-  row-gap: var(--pct-card-row-gap);
-}
-
-.scrollControls {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 100%;
-  width: var(--pct-scroll-w);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  pointer-events: none;
-}
-
-.scrollControls > * {
-  pointer-events: auto;
-}
-
-.message {
-  position: absolute;
-  inset: 30% 10% 30% 5%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-muted);
-  font-size: 0.9rem;
-}
-
 @media (max-width: 1280px) and (min-width: 1025px) {
   .logo {
     left: auto;
@@ -285,37 +150,6 @@
     max-height: 100dvh;
     padding-bottom: 0;
     overflow: hidden;
-  }
-
-  .bgViewport {
-    position: fixed;
-    inset: 0;
-    width: 100vw;
-    height: 100dvh;
-    z-index: 0;
-  }
-
-  .bgStars {
-    display: none;
-  }
-
-  .bgCharacters {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    overflow: hidden;
-  }
-
-  .bgCharactersImgDesktop {
-    display: none !important;
-  }
-
-  .bgCharactersImgMobile {
-    display: block !important;
-    object-fit: cover;
-    object-position: center top;
   }
 
   .figmaCanvas {
@@ -358,70 +192,6 @@
     container-type: normal;
   }
 
-  .right {
-    position: static;
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
-  .right::before {
-    display: none;
-  }
-
-  .searchWrap {
-    position: absolute;
-    left: 50%;
-    top: calc(149 * var(--mu));
-    width: calc(240 * var(--mu));
-    height: calc(56 * var(--mu));
-    min-height: calc(56 * var(--mu));
-    margin: 0;
-    aspect-ratio: auto;
-    translate: -50% 0;
-    z-index: 8;
-    pointer-events: auto;
-  }
-
-  .gridStack {
-    position: absolute;
-    left: 50%;
-    top: calc(238 * var(--mu));
-    width: calc(322 * var(--mu));
-    height: calc(170 * var(--mu));
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    translate: -50% 0;
-    z-index: 3;
-    pointer-events: auto;
-  }
-
-  .grid {
-    width: 100%;
-    height: 100%;
-    grid-template-columns: calc(140 / 322 * 100%) calc(140 / 322 * 100%);
-    column-gap: calc(42 / 322 * 100%);
-    row-gap: 0;
-  }
-
-  .scrollControls {
-    display: none;
-  }
-
-  .message {
-    position: absolute;
-    left: 50%;
-    top: calc(238 * var(--mu));
-    width: calc(322 * var(--mu));
-    margin: 0;
-    padding: 1rem 0;
-    text-align: center;
-    translate: -50% 0;
-    z-index: 3;
-    pointer-events: auto;
-  }
-
   .detailRegion {
     display: block;
     position: absolute;
@@ -440,66 +210,6 @@
     border-radius: calc(24 * var(--mu));
     overflow: hidden;
   }
-
-  .carouselNav {
-    display: block;
-    position: fixed;
-    top: calc(571 * var(--mu));
-    left: 50%;
-    width: calc(var(--mfw) * var(--mu));
-    height: calc(32 * var(--mu));
-    margin-left: calc(var(--mfw) * var(--mu) / -2);
-    pointer-events: none;
-    z-index: 50;
-  }
-
-  .carouselNav .carouselBtn {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: 0;
-    width: calc(32 * var(--mu));
-    height: calc(32 * var(--mu));
-    overflow: visible;
-    border-radius: calc(4 * var(--mu));
-    border: none;
-    background: #7b7b7bb2;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    color: #fff;
-    pointer-events: auto;
-    transition: background 0.2s, color 0.2s;
-  }
-
-  .carouselNav .carouselIcon {
-    width: calc(40 * var(--mu));
-    height: calc(40 * var(--mu));
-  }
-
-  .carouselNav .carouselBtnPrev {
-    left: calc(12 * var(--mu));
-  }
-
-  .carouselNav .carouselBtnNext {
-    left: calc(316 * var(--mu));
-    right: auto;
-  }
-
-  .carouselNav .carouselBtn:hover:not(:disabled) {
-    color: var(--color-lime);
-  }
-
-  .carouselNav .carouselBtn:active:not(:disabled) {
-    background: #3a3a3ae6;
-    color: var(--color-lime);
-  }
-
-  .carouselNav .carouselBtn:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-  }
-
 }
 
 @media (min-width: 1025px) {
@@ -509,37 +219,6 @@
     min-height: 100dvh;
     max-height: none;
     overflow: hidden;
-  }
-
-  .bgViewport {
-    position: absolute;
-    inset: 0;
-    width: 100vw;
-    height: auto;
-  }
-
-  .bgStars {
-    display: block;
-  }
-
-  .bgCharacters {
-    position: absolute;
-    inset: 0;
-    width: auto;
-    height: auto;
-  }
-
-  .bgCharactersImgDesktop {
-    display: block !important;
-  }
-
-  .bgCharactersImgMobile {
-    display: none !important;
-  }
-
-  .bgCharactersImg {
-    object-fit: contain;
-    object-position: left bottom;
   }
 
   .figmaCanvas {
@@ -570,18 +249,7 @@
     container-type: size;
   }
 
-  .right {
-    position: relative;
-    display: flex;
-    flex: 0 0 50%;
-  }
-
-  .right::before {
-    display: block;
-  }
-
   .detailRegion {
     display: contents;
   }
-
 }

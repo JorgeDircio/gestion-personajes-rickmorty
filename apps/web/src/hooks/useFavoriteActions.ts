@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Character, Favorite } from "@/types";
 import { favoriteToPreviewCharacter } from "@/lib/favoriteToCharacter";
+import type { CharacterSceneNavigation } from "@/hooks/characterScene/types";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   addFavoriteRequest,
@@ -10,19 +11,12 @@ import {
   removeFavoriteRequest,
 } from "@/store/favorites/favoritesSlice";
 
-interface UseFavoriteActionsParams {
-  results: Character[];
-  setSelectedId: (id: number) => void;
-  showCharacterPreview: (character: Character) => void;
-  reload: () => void;
-}
-
 export function useFavoriteActions({
   results,
-  setSelectedId,
+  selectCharacter,
   showCharacterPreview,
   reload,
-}: UseFavoriteActionsParams) {
+}: CharacterSceneNavigation) {
   const dispatch = useAppDispatch();
   const { items: favorites, loading: favoritesLoading } = useAppSelector(
     (s) => s.favorites
@@ -74,13 +68,13 @@ export function useFavoriteActions({
       const inList = results.find((c) => c.id === fav.characterId);
       if (inList) {
         setPreviewId(null);
-        setSelectedId(fav.characterId);
+        selectCharacter(fav.characterId);
         return;
       }
       setPreviewId(fav.characterId);
       showCharacterPreview(favoriteToPreviewCharacter(fav));
     },
-    [results, setSelectedId, showCharacterPreview]
+    [results, selectCharacter, showCharacterPreview]
   );
 
   const handleRemoveFavorite = useCallback(

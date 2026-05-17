@@ -1,4 +1,4 @@
-import styles from "@/app/page.module.css";
+import styles from "./CharacterCarouselNav.module.css";
 
 interface Props {
   onPrev: () => void;
