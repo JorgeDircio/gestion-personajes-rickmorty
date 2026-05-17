@@ -4,6 +4,15 @@ Construí esta app para explorar personajes con la [API pública de Rick and Mor
 
 **Stack:** Next.js 16, React 19, TypeScript, CSS Modules, Redux Toolkit y Redux Saga.
 
+### De dónde salen los datos
+
+| Recurso | Origen | Motivo |
+|---------|--------|--------|
+| **Personajes** (listado, búsqueda, paginación) | [Rick and Morty API](https://rickandmortyapi.com/api) | Catálogo oficial, paginado y estable; no duplico datos en local. |
+| **Favoritos** | JSON Server (`packages/json-server`, puerto 3001) | Persistencia local del reto: CRUD sobre `favorites` en `db.json`. |
+
+Los favoritos se consumen desde el navegador vía proxy **`/api/json-server`** (Next reescribe a `http://127.0.0.1:3001`), así evitas CORS y problemas al abrir la app por IP de red. JSON Server **no** almacena personajes: solo favoritos (referencia al `characterId` y metadatos mínimos).
+
 ---
 
 ## Prerrequisitos
@@ -89,7 +98,7 @@ pnpm install
 
 ### 2. Variables de entorno (opcional pero recomendado)
 
-La app usa `http://127.0.0.1:3001` por defecto si no configuras nada. Para dejarlo explícito:
+Por defecto la web llama a favoritos por **`/api/json-server`** (proxy interno). Solo necesitas `pnpm run dev:api` en otra terminal. Si prefieres URL directa al puerto 3001, copia `.env.example` a `.env.local` y descomenta la variable.
 
 **macOS / Linux:**
 
@@ -252,10 +261,11 @@ pnpm run lint
 
 **Si tuviera más tiempo**, priorizaría esto:
 
+- **Dockerizar el monorepo:** `docker compose` con servicios `web`, `json-server` y variables de entorno enlazadas, para levantar todo con un solo comando en cualquier máquina (hoy el setup es `pnpm install` + dos terminales).
 - **Backend real en lugar de JSON Server:** un servicio en Node (NestJS o Fastify) con PostgreSQL, migraciones y un contrato OpenAPI compartido con el frontend. JSON Server fue útil para iterar rápido, pero no da validación de negocio, auth ni concurrencia real.
 - **Capa de datos unificada:** llevar personajes y favoritos a React Query o RTK Query con caché, reintentos y estados de error consistentes, en lugar de mezclar hooks locales para personajes y Saga solo para favoritos.
 - **Pruebas de punta a punta:** Playwright cubriendo búsqueda, paginación, favoritos y responsive; complementarían los unitarios que ya tengo en slice, saga y componentes aislados.
 - **CI en el repo:** pipeline con `lint`, `test` y `build` en cada push; opcionalmente despliegue preview de la web (Vercel) y de la API en un contenedor.
 - **Observabilidad y DX:** health checks en la API, logs estructurados y variables de entorno validadas al arranque (por ejemplo con Zod en `lib/env.ts`).
-- **Accesibilidad y rendimiento:** auditoría con axe, lazy load de imágenes del grid y revisión de Core Web Vitals en móvil.
+- **Accesibilidad y rendimiento:** auditoría con axe, `loading="lazy"` en imágenes del grid (ya aplicado), fetch inicial en RSC y revisión de Core Web Vitals en móvil.
 - **Diseño system mínimo:** tokens de color y tipografía centralizados más allá de CSS Modules por pantalla, para escalar si el producto crece.
