@@ -64,6 +64,7 @@ export default function FavsTab({
                   type="button"
                   className={styles.item}
                   role="option"
+                  aria-selected={false}
                   onClick={() => {
                     onSelectFavorite(fav);
                     setOpen(false);
